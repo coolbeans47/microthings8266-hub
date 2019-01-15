@@ -1,281 +1,281 @@
-######################
+###################### 
 
-# Project Specific
+# Project Specific 
 
-######################
+###################### 
 
-/build/www/**
+/build/www/** 
 
-/src/test/javascript/coverage/
+/src/test/javascript/coverage/ 
 
-/src/test/javascript/PhantomJS*/
+/src/test/javascript/PhantomJS*/ 
 
+ 
 
+###################### 
 
-######################
+# Node 
 
-# Node
+###################### 
 
-######################
+/node/ 
 
-/node/
+node_tmp/ 
 
-node_tmp/
+node_modules/ 
 
-node_modules/
+npm-debug.log.* 
 
-npm-debug.log.*
+ 
 
+###################### 
 
+# SASS 
 
-######################
+###################### 
 
-# SASS
+.sass-cache/ 
 
-######################
+ 
 
-.sass-cache/
+###################### 
 
+# Eclipse 
 
+###################### 
 
-######################
+*.pydevproject 
 
-# Eclipse
+.project 
 
-######################
+.metadata 
 
-*.pydevproject
+tmp/ 
 
-.project
+tmp/**/* 
 
-.metadata
+*.tmp 
 
-tmp/
+*.bak 
 
-tmp/**/*
+*.swp 
 
-*.tmp
+*~.nib 
 
-*.bak
+local.properties 
 
-*.swp
+.classpath 
 
-*~.nib
+.settings/ 
 
-local.properties
+.loadpath 
 
-.classpath
+.factorypath 
 
-.settings/
+/src/main/resources/rebel.xml 
 
-.loadpath
+ 
 
-.factorypath
+# External tool builders 
 
-/src/main/resources/rebel.xml
+.externalToolBuilders/** 
 
+ 
 
+# Locally stored "Eclipse launch configurations" 
 
-# External tool builders
+*.launch 
 
-.externalToolBuilders/**
+ 
 
+# CDT-specific 
 
+.cproject 
 
-# Locally stored "Eclipse launch configurations"
+ 
 
-*.launch
+# PDT-specific 
 
+.buildpath 
 
+ 
 
-# CDT-specific
+###################### 
 
-.cproject
+# Intellij 
 
+###################### 
 
+.idea/ 
 
-# PDT-specific
+*.iml 
 
-.buildpath
+*.iws 
 
+*.ipr 
 
+*.ids 
 
-######################
+*.orig 
 
-# Intellij
+ 
 
-######################
+###################### 
 
-.idea/
+# Visual Studio Code 
 
-*.iml
+###################### 
 
-*.iws
+.vscode/ 
 
-*.ipr
+ 
 
-*.ids
+###################### 
 
-*.orig
+# Maven 
 
+###################### 
 
+/log/ 
 
-######################
+/target/ 
 
-# Visual Studio Code
+ 
 
-######################
+###################### 
 
-.vscode/
+# Gradle 
 
+###################### 
 
+.gradle/ 
 
-######################
+/build/ 
 
-# Maven
+ 
 
-######################
+###################### 
 
-/log/
+# Package Files 
 
-/target/
+###################### 
 
+*.jar 
 
+*.war 
 
-######################
+*.ear 
 
-# Gradle
+*.db 
 
-######################
+ 
 
-.gradle/
+###################### 
 
-/build/
+# Windows 
 
+###################### 
 
+# Windows image file caches 
 
-######################
+Thumbs.db 
 
-# Package Files
+ 
 
-######################
+# Folder config file 
 
-*.jar
+Desktop.ini 
 
-*.war
+ 
 
-*.ear
+###################### 
 
-*.db
+# Mac OSX 
 
+###################### 
 
+.DS_Store 
 
-######################
+.svn 
 
-# Windows
+ 
 
-######################
+# Thumbnails 
 
-# Windows image file caches
+._* 
 
-Thumbs.db
+ 
 
+# Files that might appear on external disk 
 
+.Spotlight-V100 
 
-# Folder config file
+.Trashes 
 
-Desktop.ini
+ 
 
+###################### 
 
+# Directories 
 
-######################
+###################### 
 
-# Mac OSX
+/bin/ 
 
-######################
+/deploy/ 
 
-.DS_Store
+ 
 
-.svn
+###################### 
 
+# Logs 
 
+###################### 
 
-# Thumbnails
+*.log 
 
-._*
+ 
 
+###################### 
 
+# Others 
 
-# Files that might appear on external disk
+###################### 
 
-.Spotlight-V100
+*.class 
 
-.Trashes
+*.*~ 
 
+*~ 
 
+.merge_file* 
 
-######################
+ 
 
-# Directories
+###################### 
 
-######################
+# Gradle Wrapper 
 
-/bin/
+###################### 
 
-/deploy/
+!gradle/wrapper/gradle-wrapper.jar 
 
+ 
 
+###################### 
 
-######################
+# Maven Wrapper 
 
-# Logs
+###################### 
 
-######################
+!.mvn/wrapper/maven-wrapper.jar 
 
-*.log
+ 
 
+###################### 
 
+# ESLint 
 
-######################
+###################### 
 
-# Others
-
-######################
-
-*.class
-
-*.*~
-
-*~
-
-.merge_file*
-
-
-
-######################
-
-# Gradle Wrapper
-
-######################
-
-!gradle/wrapper/gradle-wrapper.jar
-
-
-
-######################
-
-# Maven Wrapper
-
-######################
-
-!.mvn/wrapper/maven-wrapper.jar
-
-
-
-######################
-
-# ESLint
-
-######################
-
-.eslintcache
+.eslintcache 

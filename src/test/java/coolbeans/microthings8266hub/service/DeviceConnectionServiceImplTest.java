@@ -1,6 +1,6 @@
 package coolbeans.microthings8266hub.service;
 
-import coolbeans.microthings8266hub.model.DeviceConnection;
+import coolbeans.microthings8266hub.model.ThingConnection;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -20,12 +20,12 @@ public class DeviceConnectionServiceImplTest {
     DatagramService datagramService;
 
     @InjectMocks
-    DeviceConnectionServiceImpl deviceConnectionService;
+    ThingConnectionServiceImpl deviceConnectionService;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        deviceConnectionService = new DeviceConnectionServiceImpl(datagramService);
+        deviceConnectionService = new ThingConnectionServiceImpl(datagramService, null);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class DeviceConnectionServiceImplTest {
 
         when(datagramService.getPacket()).thenReturn(packet);
 
-        DeviceConnection devCon = deviceConnectionService.waitForConnection();
+        ThingConnection devCon = deviceConnectionService.waitForConnection();
 
         assertEquals(deviceName, devCon.getName());
         assertEquals(deviceIp, devCon.getIpAddress());

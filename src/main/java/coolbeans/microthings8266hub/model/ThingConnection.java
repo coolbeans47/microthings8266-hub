@@ -1,12 +1,12 @@
 package coolbeans.microthings8266hub.model;
 
-public class DeviceConnection {
+public class ThingConnection {
     private String name;
     private String ipAddress;
 
-    public DeviceConnection() {}
+    public ThingConnection() {}
 
-    public DeviceConnection(String name, String ipAddress) {
+    public ThingConnection(String name, String ipAddress) {
         this.name = name;
         this.ipAddress = ipAddress;
     }
@@ -25,5 +25,14 @@ public class DeviceConnection {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+
+    @Override
+    public String toString() {
+        return "ThingConnection{" +
+                "name='" + name + '\'' +
+                ", ipAddress='" + ipAddress + '\'' +
+                '}';
     }
 }

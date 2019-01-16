@@ -7,4 +7,5 @@ public interface DatagramService {
 
     String receiveString() throws IOException;
     DatagramPacket getPacket();
+    int getPort();
 }

@@ -1,9 +1,12 @@
 package coolbeans.microthings8266hub.service;
 
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
+@Service
 public class DatagramServiceImpl implements DatagramService {
 
     private static final int MAX_NAME_SIZE = 100;
@@ -38,5 +41,10 @@ public class DatagramServiceImpl implements DatagramService {
 
     public DatagramPacket getPacket() {
         return packet;
+    }
+
+    @Override
+    public int getPort() {
+        return socket.getLocalPort();
     }
 }

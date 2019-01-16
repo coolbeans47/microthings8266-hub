@@ -84,4 +84,25 @@ public class ThingManagerServiceImplTest {
         assertEquals(2, things.size());
     }
 
+    @Test
+    public void addConnectionWithExistngNameAndIpAddress() {
+        thingManagerService.addConnection(new ThingConnection("THING1", "192.168.4.1"));
+        //Should not update
+        assertTrue(thingManagerService.isConnected(1L));
+    }
+    @Test
+    public void addConnectionWithExistngNameAndDiffrentIp() {
+        thingManagerService.addConnection(new ThingConnection("THING1", "192.168.4.2"));
+        //Should not update
+        assertTrue(thingManagerService.isConnected(1L));
+
+        Thing thing = mapService.findById(1L);
+        assertNotNull(thing);
+        assertEquals("192.168.4.2", thing.getIpAddress());
+    }
+
+    @Test(expected = IOException.class)
+    public void connectWhenAlreadyRunning() throws IOException {
+        thingManagerService.connect(1L);
+    }
 }

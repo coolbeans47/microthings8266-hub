@@ -7,8 +7,8 @@ import java.util.List;
 public interface ThingService {
 
     List<Thing> findAll();
-    Thing findById(long id);
+    Thing findById(Long id);
     Thing findByName(String name);
     Thing save(Thing thing);
-    void deleteById(long id);
+    void deleteById(Long id);
 }

@@ -1,9 +1,8 @@
 package coolbeans.microthings8266hub.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,6 +13,10 @@ public class Thing {
     private Long id;
     private String name;
     private String ipAddress;
+    private Long startupActionId;
+
+    @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL)
+    private List<Pin> pins = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -39,12 +42,35 @@ public class Thing {
         this.ipAddress = ipAddress;
     }
 
+    public Long getStartupActionId() {
+        return startupActionId;
+    }
+
+    public void setStartupActionId(Long startupActionId) {
+        this.startupActionId = startupActionId;
+    }
+
+    public List<Pin> getPins() {
+        return pins;
+    }
+
+    public void setPins(List<Pin> pins) {
+        this.pins = pins;
+    }
+
+    public void addPin(Pin pin) {
+        pin.setThing(this);
+        pins.add(pin);
+    }
+
     @Override
     public String toString() {
         return "Thing{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
+                ", startupActionId=" + startupActionId +
+                ", pins=" + pins +
                 '}';
     }
 
@@ -53,11 +79,15 @@ public class Thing {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Thing thing = (Thing) o;
-        return id == thing.id;
+        return Objects.equals(id, thing.id) &&
+                Objects.equals(name, thing.name) &&
+                Objects.equals(ipAddress, thing.ipAddress) &&
+                Objects.equals(startupActionId, thing.startupActionId) &&
+                Objects.equals(pins, thing.pins);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, ipAddress, startupActionId, pins);
     }
 }

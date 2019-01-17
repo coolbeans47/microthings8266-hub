@@ -1,6 +1,6 @@
 # microthings8266-hub
 
-The Microthings8266 project is made of of a web application (the hub) that allows easy 
+The Microthings8266 project is made up of a web application (the hub) that allows easy 
 communication to ESP8266 devices running on the network. The microthings8266-device project 
 is the application that is loaded onto each device (via Arduino IDE). 
 

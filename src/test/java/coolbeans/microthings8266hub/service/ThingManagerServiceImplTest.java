@@ -3,6 +3,8 @@ package coolbeans.microthings8266hub.service;
 import coolbeans.microthings8266hub.esp8266.ThingClientConnection;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.model.ThingConnectionRequest;
+import coolbeans.microthings8266hub.service.repositories.PinService;
+import coolbeans.microthings8266hub.service.repositories.ThingService;
 import coolbeans.microthings8266hub.service.repositories.map.ThingMapService;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +22,13 @@ import static org.mockito.Mockito.when;
 public class ThingManagerServiceImplTest {
 
     ThingManagerServiceImpl thingManagerService;
-    ThingMapService mapService;
+    ThingService mapService;
 
     @Mock
     ThingConnectionFactory connectionFactory;
+
+    @Mock
+    PinService pinService;
 
     ThingClientConnection clientConnection;
 
@@ -34,7 +39,7 @@ public class ThingManagerServiceImplTest {
         clientConnection = Mockito.mock(ThingClientConnection.class);
         when(connectionFactory.createConnection(any(Thing.class))).thenReturn(clientConnection);
 
-        mapService = new ThingMapService();
+        mapService = new ThingMapService(pinService);
         thingManagerService = new ThingManagerServiceImpl(mapService, connectionFactory);
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
 

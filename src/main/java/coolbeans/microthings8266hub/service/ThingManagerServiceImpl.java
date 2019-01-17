@@ -9,9 +9,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 @Service
@@ -22,7 +22,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     private final ThingService thingService;
     private final ThingConnectionFactory connectionFactory;
 
-    private Map<Long, ThingClientConnection> connected = new HashMap<>();
+    private ConcurrentMap<Long, ThingClientConnection> connected = new ConcurrentHashMap<>();
 
     public ThingManagerServiceImpl(ThingService thingService, ThingConnectionFactory connectionFactory) {
         this.thingService = thingService;
@@ -61,7 +61,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     }
 
     @Override
-    synchronized public void disconnect(long id) {
+    public void disconnect(long id) {
         if (isConnected(id)) {
             connected.get(id).close();
             connected.remove(id);
@@ -106,7 +106,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
         addConnection(event.getThingConnectionRequest());
     }
 
-    synchronized private ThingClientConnection connectThing(Thing thing) {
+    private ThingClientConnection connectThing(Thing thing) {
         ThingClientConnection connection = connectionFactory.createConnection(thing);
         connected.put(thing.getId(), connection);
         connection.connect(thing);

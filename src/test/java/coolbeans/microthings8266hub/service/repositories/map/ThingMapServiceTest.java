@@ -1,6 +1,9 @@
 package coolbeans.microthings8266hub.service.repositories.map;
 
+import coolbeans.microthings8266hub.model.Pin;
+import coolbeans.microthings8266hub.model.PinMode;
 import coolbeans.microthings8266hub.model.Thing;
+import coolbeans.microthings8266hub.service.repositories.PinService;
 import coolbeans.microthings8266hub.service.repositories.ThingService;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,11 +13,12 @@ import static org.junit.Assert.*;
 public class ThingMapServiceTest {
 
     ThingService thingService;
-
+    PinService pinService;
 
     @Before
     public void setUp() throws Exception {
-        thingService = new ThingMapService();
+        pinService = new PinMapService();
+        thingService = new ThingMapService(pinService);
 
         Thing t1 = new Thing();
         t1.setId(1L);
@@ -88,7 +92,7 @@ public class ThingMapServiceTest {
 
     @Test
     public void saveWithoutIdAndEmptyList() {
-        thingService = new ThingMapService();
+        thingService = new ThingMapService(pinService);
         Thing thing = new Thing();
         thing.setIpAddress("192.168.1.3");
         thing.setName("THING1");
@@ -96,4 +100,29 @@ public class ThingMapServiceTest {
         Thing saved = thingService.save(thing);
         assertEquals(1L, (long) saved.getId());
    }
+
+   @Test
+    public void savingWithPins() {
+       Thing thing = new Thing();
+       thing.setIpAddress("192.168.1.5");
+       thing.setName("THING5");
+       thing.getPins().add(new Pin(1, "Pin-One", PinMode.OUTPUT));
+
+       thingService.save(thing);
+       assertEquals(1, pinService.findAll().size());
+
+    }
+
+
+    @Test
+    public void deleteWithPins() {
+        Thing thing = new Thing();
+        thing.setIpAddress("192.168.1.5");
+        thing.setName("THING5");
+        thing.getPins().add(new Pin(1, "Pin-One", PinMode.OUTPUT));
+        Thing saved = thingService.save(thing);
+        assertEquals(1, pinService.findAll().size());
+        thingService.deleteById(saved.getId());
+        assertEquals(0, pinService.findAll().size());
+    }
 }

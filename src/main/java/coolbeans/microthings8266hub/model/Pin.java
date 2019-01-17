@@ -1,9 +1,6 @@
 package coolbeans.microthings8266hub.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +14,7 @@ public class Pin {
     private String name;
     private PinMode pinMode;
 
+    @ManyToOne
     private Thing thing;
 
     public Pin() {

@@ -113,7 +113,6 @@ public class ThingMapServiceTest {
 
     }
 
-
     @Test
     public void deleteWithPins() {
         Thing thing = new Thing();

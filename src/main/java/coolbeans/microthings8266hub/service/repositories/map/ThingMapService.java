@@ -26,9 +26,11 @@ public class ThingMapService extends AbstractMapService<Thing>  implements Thing
         return found.orElse(null);
     }
 
+
     @Override
     public Thing save(Thing thing) {
         thing.setId(generateId(thing.getId()));
+
         thing.getPins().forEach(pin -> {
             pin.setThing(thing);
             pinService.save(pin);

@@ -2,7 +2,7 @@ package coolbeans.microthings8266hub.service;
 
 import coolbeans.microthings8266hub.esp8266.ThingClientConnection;
 import coolbeans.microthings8266hub.model.Thing;
-import coolbeans.microthings8266hub.model.ThingConnection;
+import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import coolbeans.microthings8266hub.service.repositories.map.ThingMapService;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class ThingManagerServiceImplTest {
 
         mapService = new ThingMapService();
         thingManagerService = new ThingManagerServiceImpl(mapService, connectionFactory);
-        thingManagerService.addConnection(new ThingConnection("THING1", "192.168.4.1"));
+        thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
 
 
     }
@@ -50,7 +50,8 @@ public class ThingManagerServiceImplTest {
 
     @Test
     public void connectAll() {
-        thingManagerService.addConnection(new ThingConnection("THING2", "192.168.4.2"));
+        thingManagerService.addConnection(new ThingConnectionRequest("THING2", "192.168.4.2"));
+        thingManagerService.disconnect(2L);
         thingManagerService.connectAll();
         assertEquals(2, thingManagerService.getConnectedCount());
     }
@@ -62,6 +63,12 @@ public class ThingManagerServiceImplTest {
         thingManagerService.connect(1L);
         assertTrue(thingManagerService.isConnected(1L));
     }
+
+    @Test(expected = IOException.class)
+    public void connectWithInvalidID() throws IOException {
+        thingManagerService.connect(123L);
+    }
+
 
     @Test
     public void disconnect() {
@@ -77,7 +84,7 @@ public class ThingManagerServiceImplTest {
 
     @Test
     public void addConnection() {
-        thingManagerService.addConnection(new ThingConnection("THING2", "192.168.4.2"));
+        thingManagerService.addConnection(new ThingConnectionRequest("THING2", "192.168.4.2"));
         assertTrue(thingManagerService.isConnected(2L));
 
         List<Thing> things = mapService.findAll();
@@ -86,13 +93,13 @@ public class ThingManagerServiceImplTest {
 
     @Test
     public void addConnectionWithExistngNameAndIpAddress() {
-        thingManagerService.addConnection(new ThingConnection("THING1", "192.168.4.1"));
+        thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
         //Should not update
         assertTrue(thingManagerService.isConnected(1L));
     }
     @Test
     public void addConnectionWithExistngNameAndDiffrentIp() {
-        thingManagerService.addConnection(new ThingConnection("THING1", "192.168.4.2"));
+        thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.2"));
         //Should not update
         assertTrue(thingManagerService.isConnected(1L));
 

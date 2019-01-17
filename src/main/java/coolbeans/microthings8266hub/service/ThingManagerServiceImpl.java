@@ -3,7 +3,7 @@ package coolbeans.microthings8266hub.service;
 import coolbeans.microthings8266hub.esp8266.ThingClientConnection;
 import coolbeans.microthings8266hub.events.ThingConnectionEvent;
 import coolbeans.microthings8266hub.model.Thing;
-import coolbeans.microthings8266hub.model.ThingConnection;
+import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import coolbeans.microthings8266hub.service.repositories.ThingService;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -79,7 +79,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     }
 
     @Override
-    public void addConnection(ThingConnection thingConnection) {
+    public void addConnection(ThingConnectionRequest thingConnection) {
         //If it already exists check UP adresss in database and updated if required
         Thing thing = thingService.findByName(thingConnection.getName());
         if (thing == null) {
@@ -102,7 +102,8 @@ public class ThingManagerServiceImpl implements ThingManagerService {
 
     @EventListener
     public void newConnectioEvent(ThingConnectionEvent event) {
-        addConnection(event.getThingConnection());
+        logger.info("EVentListener ThingConnectionEvent: " + event.getThingConnectionRequest().toString());
+        addConnection(event.getThingConnectionRequest());
     }
 
     synchronized private ThingClientConnection connectThing(Thing thing) {

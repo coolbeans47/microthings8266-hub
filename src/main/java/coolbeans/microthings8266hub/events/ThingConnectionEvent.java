@@ -1,17 +1,17 @@
 package coolbeans.microthings8266hub.events;
 
-import coolbeans.microthings8266hub.model.ThingConnection;
+import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import org.springframework.context.ApplicationEvent;
 
 public class ThingConnectionEvent extends ApplicationEvent {
 
-    private final ThingConnection thingConnection;
-    public ThingConnectionEvent(Object source, ThingConnection thingConnection) {
+    private final ThingConnectionRequest thingConnectionRequest;
+    public ThingConnectionEvent(Object source, ThingConnectionRequest thingConnectionRequest) {
         super(source);
-        this.thingConnection = thingConnection;
+        this.thingConnectionRequest = thingConnectionRequest;
     }
 
-    public ThingConnection getThingConnection() {
-        return thingConnection;
+    public ThingConnectionRequest getThingConnectionRequest() {
+        return thingConnectionRequest;
     }
 }

@@ -8,10 +8,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 @EnableAsync
 public class Microthings8266HubApplication {
+
+    private static final Logger logger = Logger.getLogger(Microthings8266HubApplication.class.getName());
 
     @Autowired
     private ThingConnectionService connectionService;

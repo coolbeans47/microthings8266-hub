@@ -1,12 +1,12 @@
 package coolbeans.microthings8266hub.model;
 
-public class ThingConnection {
+public class ThingConnectionRequest {
     private String name;
     private String ipAddress;
 
-    public ThingConnection() {}
+    public ThingConnectionRequest() {}
 
-    public ThingConnection(String name, String ipAddress) {
+    public ThingConnectionRequest(String name, String ipAddress) {
         this.name = name;
         this.ipAddress = ipAddress;
     }

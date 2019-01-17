@@ -1,7 +1,7 @@
 package coolbeans.microthings8266hub.service;
 
 import coolbeans.microthings8266hub.events.ThingConnectionEvent;
-import coolbeans.microthings8266hub.model.ThingConnection;
+import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +25,8 @@ public class ThingConnectionServiceImpl implements ThingConnectionService {
 
 
     @Override
-    public ThingConnection waitForConnection() throws IOException {
-        ThingConnection device = new ThingConnection();
+    public ThingConnectionRequest waitForConnection() throws IOException {
+        ThingConnectionRequest device = new ThingConnectionRequest();
 
         String name = datagramService.receiveString();
         device.setName(name);
@@ -39,7 +39,7 @@ public class ThingConnectionServiceImpl implements ThingConnectionService {
             logger.info("Waiting for UDP connections on port: " + datagramService.getPort());
             running = true;
             while (running) {
-                ThingConnection connection = null;
+                ThingConnectionRequest connection = null;
                 try {
                     connection = waitForConnection();
                     messageService.publish(new ThingConnectionEvent(this, connection));

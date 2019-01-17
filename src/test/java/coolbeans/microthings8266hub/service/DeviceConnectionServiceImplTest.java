@@ -1,6 +1,6 @@
 package coolbeans.microthings8266hub.service;
 
-import coolbeans.microthings8266hub.model.ThingConnection;
+import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -41,7 +41,7 @@ public class DeviceConnectionServiceImplTest {
 
         when(datagramService.getPacket()).thenReturn(packet);
 
-        ThingConnection devCon = deviceConnectionService.waitForConnection();
+        ThingConnectionRequest devCon = deviceConnectionService.waitForConnection();
 
         assertEquals(deviceName, devCon.getName());
         assertEquals(deviceIp, devCon.getIpAddress());

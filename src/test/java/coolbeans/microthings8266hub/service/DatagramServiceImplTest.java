@@ -3,6 +3,8 @@ package coolbeans.microthings8266hub.service;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,7 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 import static org.junit.Assert.assertEquals;
-
+import static org.mockito.Mockito.when;
 
 
 class MockDatagramSocket extends DatagramSocket {
@@ -39,11 +41,16 @@ public class DatagramServiceImplTest {
     MockDatagramSocket socket;
     DatagramServiceImpl datagramService;
 
+    @Mock
+    SocketFactory socketFactory;
+
     @Before
     public void setup() throws SocketException {
+        MockitoAnnotations.initMocks(this);
         socket = new MockDatagramSocket(PORT);
         socket.ipAddress = IP_ADDRESS;
-        datagramService = new DatagramServiceImpl(socket);
+        when(socketFactory.createDatagramSocket()).thenReturn(socket);
+        datagramService = new DatagramServiceImpl(socketFactory);
     }
 
     @After

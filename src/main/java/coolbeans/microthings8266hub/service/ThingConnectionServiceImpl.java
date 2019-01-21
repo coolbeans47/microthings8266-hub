@@ -1,6 +1,6 @@
 package coolbeans.microthings8266hub.service;
 
-import coolbeans.microthings8266hub.events.ThingConnectionEvent;
+import coolbeans.microthings8266hub.events.ThingConnectionRequestEvent;
 import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class ThingConnectionServiceImpl implements ThingConnectionService {
                 ThingConnectionRequest connection = null;
                 try {
                     connection = waitForConnection();
-                    messageService.publish(new ThingConnectionEvent(this, connection));
+                    messageService.publish(new ThingConnectionRequestEvent(this, connection));
                     logger.info("Thing Connection: " + connection.toString());
                 } catch (IOException e) {
                     logger.severe("Error waiting for connection" + e.toString());

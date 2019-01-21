@@ -11,12 +11,15 @@ public class DatagramServiceImpl implements DatagramService {
 
     private static final int MAX_NAME_SIZE = 100;
 
+    private final SocketFactory socketFactory;
     private final DatagramSocket socket;
     private DatagramPacket packet;
     private byte[] buffer;
 
-    public DatagramServiceImpl(DatagramSocket socket) {
-        this.socket = socket;
+
+    public DatagramServiceImpl(SocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
+        this.socket = socketFactory.createDatagramSocket();
         buffer = new byte[MAX_NAME_SIZE];
     }
 

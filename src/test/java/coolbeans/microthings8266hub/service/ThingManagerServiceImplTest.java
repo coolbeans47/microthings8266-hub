@@ -102,6 +102,7 @@ public class ThingManagerServiceImplTest {
         //Should not update
         assertTrue(thingManagerService.isConnected(1L));
     }
+
     @Test
     public void addConnectionWithExistngNameAndDiffrentIp() {
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.2"));
@@ -117,4 +118,5 @@ public class ThingManagerServiceImplTest {
     public void connectWhenAlreadyRunning() throws IOException {
         thingManagerService.connect(1L);
     }
+
 }

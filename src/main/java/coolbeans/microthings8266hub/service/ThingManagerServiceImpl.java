@@ -1,7 +1,10 @@
 package coolbeans.microthings8266hub.service;
 
 import coolbeans.microthings8266hub.esp8266.ThingClientConnection;
-import coolbeans.microthings8266hub.events.ThingConnectionEvent;
+import coolbeans.microthings8266hub.events.ThingActionCompleteEvent;
+import coolbeans.microthings8266hub.events.ThingConnectedEvent;
+import coolbeans.microthings8266hub.events.ThingConnectionRequestEvent;
+import coolbeans.microthings8266hub.events.ThingDisconnectedEvent;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import coolbeans.microthings8266hub.service.repositories.ThingService;
@@ -79,20 +82,20 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     }
 
     @Override
-    public void addConnection(ThingConnectionRequest thingConnection) {
+    public void addConnection(ThingConnectionRequest connectionRequest) {
         //If it already exists check UP adresss in database and updated if required
-        Thing thing = thingService.findByName(thingConnection.getName());
+        Thing thing = thingService.findByName(connectionRequest.getName());
         if (thing == null) {
             thing = new Thing();
-            thing.setName(thingConnection.getName());
-            thing.setIpAddress(thingConnection.getIpAddress());
+            thing.setName(connectionRequest.getName());
+            thing.setIpAddress(connectionRequest.getIpAddress());
             thing = thingService.save(thing);
         } else {
             logger.info("Thing: " + thing.getName() + " already exists");
-            if (!thing.getIpAddress().equals(thingConnection.getIpAddress())) {
+            if (!thing.getIpAddress().equals(connectionRequest.getIpAddress())) {
                 logger.info("Thing: " + thing.getName() + "- Updating IP Address from: " +
-                        thing.getIpAddress() + " to: " + thingConnection.getIpAddress());
-                thing.setIpAddress(thingConnection.getIpAddress());
+                        thing.getIpAddress() + " to: " + connectionRequest.getIpAddress());
+                thing.setIpAddress(connectionRequest.getIpAddress());
                 thingService.save(thing);
             }
         }
@@ -101,15 +104,33 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     }
 
     @EventListener
-    public void newConnectioEvent(ThingConnectionEvent event) {
-        logger.info("EVentListener ThingConnectionEvent: " + event.getThingConnectionRequest().toString());
+    public void newConnectioEvent(ThingConnectionRequestEvent event) {
+        logger.info("EVentListener ThingConnectionRequestEvent: " + event.getThingConnectionRequest().toString());
         addConnection(event.getThingConnectionRequest());
+    }
+
+    @EventListener
+    public void thingConnectdEvent(ThingConnectedEvent event) {
+        logger.info("EVentListener ThingConnectedEvent: " + event.getThing() +
+                " Thread: " + Thread.currentThread().getId());
+    }
+
+    @EventListener
+    public void thingDisconectedEvent(ThingDisconnectedEvent event) {
+        logger.info("EVentListener ThingDisconnectedEvent: " + event.getThing() +
+                " Thread: " + Thread.currentThread().getId());
+    }
+
+    @EventListener
+    public void thingActionCompleteEvent(ThingActionCompleteEvent event) {
+        logger.info("EVentListener ThingActionCompleteEvent: " + event.getThing() +
+                " Thread: " + Thread.currentThread().getId());
     }
 
     private ThingClientConnection connectThing(Thing thing) {
         ThingClientConnection connection = connectionFactory.createConnection(thing);
         connected.put(thing.getId(), connection);
-        connection.connect(thing);
+        connection.connect();
         return connection;
     }
 }

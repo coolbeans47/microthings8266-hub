@@ -20,6 +20,7 @@ public class Microthings8266HubApplication {
     private ThingConnectionService connectionService;
 
     public static void main(String[] args) {
+        logger.info("**MAIN APPPLICATION TRHEAD ID: " + Thread.currentThread().getId());
         SpringApplication.run(Microthings8266HubApplication.class, args);
     }
 

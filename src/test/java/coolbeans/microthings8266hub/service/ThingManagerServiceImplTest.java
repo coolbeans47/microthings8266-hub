@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +26,7 @@ public class ThingManagerServiceImplTest {
     ThingService mapService;
 
     @Mock
-    ThingConnectionFactory connectionFactory;
+    ApplicationContext context;
 
     @Mock
     PinService pinService;
@@ -37,10 +38,10 @@ public class ThingManagerServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         clientConnection = Mockito.mock(ThingClientConnection.class);
-        when(connectionFactory.createConnection(any(Thing.class))).thenReturn(clientConnection);
+        when(context.getBean(any(String.class))).thenReturn(clientConnection);
 
         mapService = new ThingMapService(pinService);
-        thingManagerService = new ThingManagerServiceImpl(mapService, connectionFactory);
+        thingManagerService = new ThingManagerServiceImpl(mapService, context);
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
 
 

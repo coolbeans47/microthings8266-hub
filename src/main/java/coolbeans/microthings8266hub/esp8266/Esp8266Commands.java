@@ -7,7 +7,7 @@ public enum Esp8266Commands {
 
     Esp8266Commands(int value) { this.value = value; }
 
-    public int getValue() {
-        return value;
+    public byte getValue() {
+        return (byte) value;
     }
 }

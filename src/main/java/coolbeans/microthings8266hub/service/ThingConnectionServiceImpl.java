@@ -36,7 +36,8 @@ public class ThingConnectionServiceImpl implements ThingConnectionService {
 
     @Async
     public void start() {
-            logger.info("Waiting for UDP connections on port: " + datagramService.getPort());
+            logger.info("Waiting for UDP connections on port: " + datagramService.getPort() +
+                    " Thread ID: " + Thread.currentThread().getId());
             running = true;
             while (running) {
                 ThingConnectionRequest connection = null;

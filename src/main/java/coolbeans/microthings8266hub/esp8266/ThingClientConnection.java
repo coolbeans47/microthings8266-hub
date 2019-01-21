@@ -1,8 +1,10 @@
 package coolbeans.microthings8266hub.esp8266;
 
+import coolbeans.microthings8266hub.model.Thing;
+
 public interface ThingClientConnection {
 
-    void connect();
+    void connect(Thing thing);
     void close();
-    ActionResponse invokeAction(ActionRequest req);
+    void invokeAction(ActionRequest req);
 }

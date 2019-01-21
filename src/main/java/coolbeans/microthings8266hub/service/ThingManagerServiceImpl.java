@@ -8,6 +8,7 @@ import coolbeans.microthings8266hub.events.ThingDisconnectedEvent;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.model.ThingConnectionRequest;
 import coolbeans.microthings8266hub.service.repositories.ThingService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -17,19 +18,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
+
 @Service
 public class ThingManagerServiceImpl implements ThingManagerService {
 
     private Logger logger = Logger.getLogger(ThingManagerServiceImpl.class.getName());
 
     private final ThingService thingService;
-    private final ThingConnectionFactory connectionFactory;
+    private final ApplicationContext applicationContext;
 
     private ConcurrentMap<Long, ThingClientConnection> connected = new ConcurrentHashMap<>();
 
-    public ThingManagerServiceImpl(ThingService thingService, ThingConnectionFactory connectionFactory) {
+    public ThingManagerServiceImpl(ThingService thingService,
+                                   ApplicationContext applicationContext) {
         this.thingService = thingService;
-        this.connectionFactory = connectionFactory;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -105,7 +108,9 @@ public class ThingManagerServiceImpl implements ThingManagerService {
 
     @EventListener
     public void newConnectioEvent(ThingConnectionRequestEvent event) {
-        logger.info("EVentListener ThingConnectionRequestEvent: " + event.getThingConnectionRequest().toString());
+        logger.info("EVentListener ThingConnectionRequestEvent: " + event.getThingConnectionRequest().toString() +
+                " Thread ID: " + Thread.currentThread().getId());
+
         addConnection(event.getThingConnectionRequest());
     }
 
@@ -128,9 +133,10 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     }
 
     private ThingClientConnection connectThing(Thing thing) {
-        ThingClientConnection connection = connectionFactory.createConnection(thing);
+        //ThingClientConnection connection = connectionFactory.createConnection(thing);
+        ThingClientConnection connection = (ThingClientConnection) applicationContext.getBean("thingClientConnection");
         connected.put(thing.getId(), connection);
-        connection.connect();
+        connection.connect(thing);
         return connection;
     }
 }

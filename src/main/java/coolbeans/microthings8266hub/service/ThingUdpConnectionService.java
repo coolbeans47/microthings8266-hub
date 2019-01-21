@@ -9,16 +9,16 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 @Service
-public class ThingConnectionServiceImpl implements ThingConnectionService {
+public class ThingUdpConnectionService implements ThingConnectionService {
 
-    private static final Logger logger = Logger.getLogger(ThingConnectionServiceImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(ThingUdpConnectionService.class.getName());
 
     private final DatagramService datagramService;
     private final ApplicationMessageService messageService;
 
     private boolean running;
 
-    public ThingConnectionServiceImpl(DatagramService datagramService, ApplicationMessageService messageService) {
+    public ThingUdpConnectionService(DatagramService datagramService, ApplicationMessageService messageService) {
         this.datagramService = datagramService;
         this.messageService = messageService;
     }

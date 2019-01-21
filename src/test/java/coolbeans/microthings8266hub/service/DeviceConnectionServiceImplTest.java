@@ -20,12 +20,12 @@ public class DeviceConnectionServiceImplTest {
     DatagramService datagramService;
 
     @InjectMocks
-    ThingConnectionServiceImpl deviceConnectionService;
+    ThingUdpConnectionService deviceConnectionService;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        deviceConnectionService = new ThingConnectionServiceImpl(datagramService, null);
+        deviceConnectionService = new ThingUdpConnectionService(datagramService, null);
     }
 
     @Test

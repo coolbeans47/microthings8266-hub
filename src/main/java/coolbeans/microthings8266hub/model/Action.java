@@ -53,7 +53,6 @@ public class Action {
         if (o == null || getClass() != o.getClass()) return false;
         Action action = (Action) o;
         return Objects.equals(id, action.id) &&
-                Objects.equals(thing, action.thing) &&
                 Objects.equals(name, action.name) &&
                 Objects.equals(script, action.script);
     }
@@ -67,7 +66,6 @@ public class Action {
     public String toString() {
         return "Action{" +
                 "id=" + id +
-                ", thing=" + thing +
                 ", actionName='" + name + '\'' +
                 ", script='" + script + '\'' +
                 '}';

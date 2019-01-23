@@ -6,6 +6,6 @@ public interface ThingClientConnection {
 
     void connect(Thing thing);
     void close();
-    void invokeAction(long actionId);
+    Object invokeAction(String name);
     boolean isConnected();
 }

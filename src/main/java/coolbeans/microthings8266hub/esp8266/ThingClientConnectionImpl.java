@@ -1,8 +1,10 @@
 package coolbeans.microthings8266hub.esp8266;
 
 import coolbeans.microthings8266hub.events.ThingConnectedEvent;
+import coolbeans.microthings8266hub.model.Action;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.service.ApplicationMessageService;
+import coolbeans.microthings8266hub.service.ScriptRunner;
 import coolbeans.microthings8266hub.service.SocketFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
@@ -26,13 +28,15 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
     private final ApplicationMessageService messageService;
     private final SocketFactory socketFactory;
     private final Esp8266CommandExecutor commandExecutor;
+    private final ScriptRunner scriptRunner;
 
     public ThingClientConnectionImpl(ApplicationMessageService messageService,
                                      SocketFactory socketFactory,
-                                     Esp8266CommandExecutor commandExecutor) {
+                                     Esp8266CommandExecutor commandExecutor, ScriptRunner scriptRunner) {
         this.messageService = messageService;
         this.socketFactory = socketFactory;
         this.commandExecutor = commandExecutor;
+        this.scriptRunner = scriptRunner;
     }
 
 
@@ -79,9 +83,17 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     @Override
     @Async
-    public void invokeAction(long actionId) {
-        System.out.println("Invoking Action(" + actionId + ") : " + thing.getName() + " Thread ID:" +
+    public Object invokeAction(String name) {
+        Action action = thing.findActionByName(name);
+        if (action == null) {
+            logger.warning("Action not found: " + name);
+            return null;
+        }
+
+        System.out.println("Invoking Action(" + name + ") : " + thing.getName() + " Thread ID:" +
                 Thread.currentThread().getId());
+        logger.info(action.toString());
+        return scriptRunner.execute(action.getScript(), action.getName());
     }
 
     /**

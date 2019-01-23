@@ -8,27 +8,11 @@ import org.mockito.MockitoAnnotations;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-
-class TestInputStream extends InputStream {
-
-    private byte[] data;
-    int idx = 0;
-    public TestInputStream(String str) {
-        data = str.getBytes();
-    }
-
-    @Override
-    public int read() throws IOException {
-        if (idx >= data.length) return -1;
-        return data[idx++];
-    }
-}
 
 
 public class Esp8266CommandExecutorImplTest {
@@ -38,7 +22,6 @@ public class Esp8266CommandExecutorImplTest {
     @Mock
     Socket socket;
 
-    TestInputStream inputStream;
     ByteArrayOutputStream outputStream;
 
     @Before
@@ -53,8 +36,10 @@ public class Esp8266CommandExecutorImplTest {
     @Test
     public void echoCommand() throws IOException {
         String msg = "TEST";
-        inputStream = new TestInputStream(msg);
-        when(socket.getInputStream()).thenReturn(inputStream);
+        //inputStream = new TestInputStream(msg);
+        ByteArrayInputStream is = new ByteArrayInputStream((msg + "\n").getBytes());
+
+        when(socket.getInputStream()).thenReturn(is);
         String response = commandExecutor.echo(msg);
         assertEquals(msg, response);
         assertEquals("\0\0\0" + msg + "\0", outputStream.toString());

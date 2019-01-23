@@ -1,7 +1,9 @@
 package coolbeans.microthings8266hub.esp8266;
 
+import coolbeans.microthings8266hub.model.Action;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.service.ApplicationMessageService;
+import coolbeans.microthings8266hub.service.ScriptRunner;
 import coolbeans.microthings8266hub.service.SocketFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +14,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -35,12 +36,15 @@ public class ThingClientConnectionImplTest {
     @Mock
     Socket socket;
 
+    @Mock
+    ScriptRunner scriptRunner;
+
     Thing thing;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        thingConnection = new ThingClientConnectionImpl(messageService, socketFactory, esp8266CommandExecutor);
+        thingConnection = new ThingClientConnectionImpl(messageService, socketFactory, esp8266CommandExecutor, scriptRunner);
         when(socketFactory.createSocket(anyString())).thenReturn(socket);
         when(socket.isConnected()).thenReturn(true);
 
@@ -48,6 +52,12 @@ public class ThingClientConnectionImplTest {
         thing.setId(1L);
         thing.setIpAddress("192.168.2.1");
         thing.setName("TEST-NAME");
+
+        Action action = new Action();
+        action.setId(1L);
+        action.setName("RET123");
+        action.setScript("function run() { return 123; }");
+        thing.addAction(action);
 
         /*
          The connect method will connect to socket and then perform an echo command using the
@@ -71,7 +81,11 @@ public class ThingClientConnectionImplTest {
 
     @Test
     public void invokeAction() {
-        // TODO: 23/01/19
+        when(scriptRunner.execute(anyString(), anyString())).thenReturn("123");
+        thingConnection.connect(thing);
+        Object response = thingConnection.invokeAction("RET123");
+        assertNotNull(response);
+        assertEquals("123", response);
     }
 
     @Test()

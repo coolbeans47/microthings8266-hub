@@ -2,6 +2,7 @@ package coolbeans.microthings8266hub.service;
 
 import coolbeans.microthings8266hub.esp8266.Esp8266CommandExecutor;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.springframework.context.annotation.Scope;
@@ -30,7 +31,10 @@ public class RhinoScriptRunner implements ScriptRunner {
             ScriptableObject.putProperty(scope, "gpio", gpio);
 
             Object result = cx.evaluateString(scope, script, name, 1, null);
-            return cx.toString(result);
+            if (result instanceof NativeJavaObject) {
+                result = ((NativeJavaObject) result).unwrap();
+            }
+            return result; //cx.toString(result);
 
         } finally {
             Context.exit();

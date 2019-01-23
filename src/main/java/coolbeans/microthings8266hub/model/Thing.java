@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Thing {
@@ -80,6 +81,13 @@ public class Thing {
         actions.add(action);
     }
 
+    public Action findActionByName(String name) {
+        Optional<Action> action = actions.stream()
+                .filter(a -> a.getName().equals(name))
+                .findFirst();
+        return action.orElse(null);
+    }
+
     @Override
     public String toString() {
         return "Thing{" +
@@ -109,4 +117,6 @@ public class Thing {
     public int hashCode() {
         return Objects.hash(id, name, ipAddress, startupActionId, pins, actions);
     }
+
+
 }

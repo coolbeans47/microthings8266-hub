@@ -3,6 +3,7 @@ package coolbeans.microthings8266hub.service.repositories.map;
 import coolbeans.microthings8266hub.model.Pin;
 import coolbeans.microthings8266hub.model.PinMode;
 import coolbeans.microthings8266hub.model.Thing;
+import coolbeans.microthings8266hub.service.repositories.ActionService;
 import coolbeans.microthings8266hub.service.repositories.PinService;
 import coolbeans.microthings8266hub.service.repositories.ThingService;
 import org.junit.Before;
@@ -14,11 +15,13 @@ public class ThingMapServiceTest {
 
     ThingService thingService;
     PinService pinService;
+    ActionService actionService;
 
     @Before
     public void setUp() throws Exception {
         pinService = new PinMapService();
-        thingService = new ThingMapService(pinService);
+        thingService = new ThingMapService(pinService, actionService);
+        actionService = new ActionMapService();
 
         Thing t1 = new Thing();
         t1.setId(1L);
@@ -92,7 +95,7 @@ public class ThingMapServiceTest {
 
     @Test
     public void saveWithoutIdAndEmptyList() {
-        thingService = new ThingMapService(pinService);
+        thingService = new ThingMapService(pinService, actionService);
         Thing thing = new Thing();
         thing.setIpAddress("192.168.1.3");
         thing.setName("THING1");

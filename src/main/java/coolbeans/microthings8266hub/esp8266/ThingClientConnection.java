@@ -6,5 +6,6 @@ public interface ThingClientConnection {
 
     void connect(Thing thing);
     void close();
-    void invokeAction(ActionRequest req);
+    void invokeAction(long actionId);
+    boolean isConnected();
 }

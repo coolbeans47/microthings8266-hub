@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.logging.Logger;
 
 @Component("thingClientConnection")
@@ -41,11 +43,12 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
         System.out.println("Connectinhg to thing: " + thing.getName() + " Thread ID:" +
                 Thread.currentThread().getId());
         socket = socketFactory.createSocket(thing.getIpAddress());
+        commandExecutor.setSocket(socket);
         if (socket.isConnected()) {
 
             //send echo
             try {
-                String response = commandExecutor.echo(socket, thing.getName());
+                String response = commandExecutor.echo(thing.getName());
 
                 if (!response.equals(thing.getName())) {
                     logger.warning("Echo Response did not match. Expected: " + thing.getName() +
@@ -76,9 +79,41 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     @Override
     @Async
-    public void invokeAction(ActionRequest req) {
-        System.out.println("Invoking Action: " + thing.getName() + " Thread ID:" +
+    public void invokeAction(long actionId) {
+        System.out.println("Invoking Action(" + actionId + ") : " + thing.getName() + " Thread ID:" +
                 Thread.currentThread().getId());
+    }
+
+    /**
+     * Set the timeout to 1 second and send an echo command to the connected Thing
+     * and see if there is a response within that time. If not report back that we
+     * are no longer connected to the device,
+     * @return true if socket is still connected to a Thing
+     */
+    @Override
+    public boolean isConnected() {
+        if (socket == null || ! socket.isConnected()) return false;
+
+        int saveTimeout = 0;
+        try {
+            saveTimeout = socket.getSoTimeout();
+            socket.setSoTimeout(1000);
+            try {
+                commandExecutor.echo("Test");
+                return true;
+            } catch(SocketTimeoutException e) {
+                return false;
+            }
+        } catch (IOException e) {
+            logger.warning("Error while attempting an echo in isConnected(): " + e.toString());
+           return false;
+        } finally {
+            try {
+                socket.setSoTimeout(saveTimeout);
+            } catch (SocketException e) {
+                logger.warning("Failed to reset timeout: " + e.toString());
+            }
+        }
     }
 
     public Thing getThing() {

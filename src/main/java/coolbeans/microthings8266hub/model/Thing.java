@@ -19,6 +19,9 @@ public class Thing {
     @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL)
     private List<Pin> pins = new ArrayList<>();
 
+    @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL)
+    private List<Action> actions = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -59,9 +62,22 @@ public class Thing {
         this.pins = pins;
     }
 
+    public List<Action> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
+    }
+
     public void addPin(Pin pin) {
         pin.setThing(this);
         pins.add(pin);
+    }
+
+    public void addAction(Action action) {
+        action.setThing(this);
+        actions.add(action);
     }
 
     @Override
@@ -72,6 +88,7 @@ public class Thing {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", startupActionId=" + startupActionId +
                 ", pins=" + pins +
+                ", actions=" + actions +
                 '}';
     }
 
@@ -84,11 +101,12 @@ public class Thing {
                 Objects.equals(name, thing.name) &&
                 Objects.equals(ipAddress, thing.ipAddress) &&
                 Objects.equals(startupActionId, thing.startupActionId) &&
-                Objects.equals(pins, thing.pins);
+                Objects.equals(pins, thing.pins) &&
+                Objects.equals(actions, thing.actions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, ipAddress, startupActionId, pins);
+        return Objects.hash(id, name, ipAddress, startupActionId, pins, actions);
     }
 }

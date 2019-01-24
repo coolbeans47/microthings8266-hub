@@ -1,12 +1,14 @@
 package coolbeans.microthings8266hub.esp8266;
 
+import coolbeans.microthings8266hub.events.ThingActionCompleteEvent;
 import coolbeans.microthings8266hub.model.Action;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.service.ApplicationMessageService;
-import coolbeans.microthings8266hub.service.ScriptRunner;
 import coolbeans.microthings8266hub.service.SocketFactory;
+import coolbeans.microthings8266hub.service.script.ScriptRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -81,11 +83,18 @@ public class ThingClientConnectionImplTest {
 
     @Test
     public void invokeAction() {
+
         when(scriptRunner.execute(anyString(), anyString())).thenReturn("123");
         thingConnection.connect(thing);
-        Object response = thingConnection.invokeAction("RET123");
-        assertNotNull(response);
-        assertEquals("123", response);
+
+        ArgumentCaptor<ThingActionCompleteEvent> captor = ArgumentCaptor.forClass(ThingActionCompleteEvent.class);
+        thingConnection.invokeAction("RET123");
+        verify(messageService, times(2)).publish(captor.capture());
+
+        ThingActionCompleteEvent event = captor.getValue();
+        assertNotNull(event.getResponse());
+        assertEquals(String.class, event.getResponse().getClass());
+        assertEquals("123", event.getResponse());
     }
 
     @Test()

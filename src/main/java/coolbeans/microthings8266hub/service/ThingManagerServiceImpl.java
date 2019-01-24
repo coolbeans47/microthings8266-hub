@@ -129,8 +129,11 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     @EventListener
     public void thingActionCompleteEvent(ThingActionCompleteEvent event) {
         logger.info("EVentListener ThingActionCompleteEvent: " + event.getThing() +
+                " Response: " + event.getResponse() +
                 " Thread: " + Thread.currentThread().getId());
     }
+
+
 
     private ThingClientConnection connectThing(Thing thing) {
         //ThingClientConnection connection = connectionFactory.createConnection(thing);

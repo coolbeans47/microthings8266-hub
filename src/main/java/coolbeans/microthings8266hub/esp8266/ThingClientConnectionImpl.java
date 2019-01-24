@@ -1,11 +1,13 @@
 package coolbeans.microthings8266hub.esp8266;
 
+import coolbeans.microthings8266hub.events.ThingActionCompleteEvent;
 import coolbeans.microthings8266hub.events.ThingConnectedEvent;
 import coolbeans.microthings8266hub.model.Action;
 import coolbeans.microthings8266hub.model.Thing;
 import coolbeans.microthings8266hub.service.ApplicationMessageService;
-import coolbeans.microthings8266hub.service.ScriptRunner;
 import coolbeans.microthings8266hub.service.SocketFactory;
+import coolbeans.microthings8266hub.service.script.ScriptContext;
+import coolbeans.microthings8266hub.service.script.ScriptRunner;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,8 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     private static final Logger logger = Logger.getLogger(ThingClientConnectionImpl.class.getName());
 
+    private static final String GPIO_LIB_NAME = "gpio";
+
     private Socket socket;
     private Thing thing;
 
@@ -30,9 +34,12 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
     private final Esp8266CommandExecutor commandExecutor;
     private final ScriptRunner scriptRunner;
 
+    private ScriptContext scriptContext;
+
     public ThingClientConnectionImpl(ApplicationMessageService messageService,
                                      SocketFactory socketFactory,
-                                     Esp8266CommandExecutor commandExecutor, ScriptRunner scriptRunner) {
+                                     Esp8266CommandExecutor commandExecutor,
+                                     ScriptRunner scriptRunner) {
         this.messageService = messageService;
         this.socketFactory = socketFactory;
         this.commandExecutor = commandExecutor;
@@ -44,10 +51,11 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
     @Async
     public void connect(Thing thing) {
         this.thing = thing;
-        System.out.println("Connectinhg to thing: " + thing.getName() + " Thread ID:" +
+        logger.info("Connectinhg to thing: " + thing.getName() + " Thread ID:" +
                 Thread.currentThread().getId());
         socket = socketFactory.createSocket(thing.getIpAddress());
         commandExecutor.setSocket(socket);
+        initScriptContext();
         if (socket.isConnected()) {
 
             //send echo
@@ -69,6 +77,7 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
         logger.severe("Could not connect to Thing: " + thing.toString());
     }
 
+
     @Override
     @Async
     public void close() {
@@ -83,17 +92,20 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     @Override
     @Async
-    public Object invokeAction(String name) {
+    public void invokeAction(String name) {
         Action action = thing.findActionByName(name);
         if (action == null) {
             logger.warning("Action not found: " + name);
-            return null;
+            return;
         }
 
         System.out.println("Invoking Action(" + name + ") : " + thing.getName() + " Thread ID:" +
                 Thread.currentThread().getId());
         logger.info(action.toString());
-        return scriptRunner.execute(action.getScript(), action.getName());
+
+        Object response = scriptRunner.execute(action.getScript(), action.getName());
+        logger.info("Action Response: " + response);
+        messageService.publish(new ThingActionCompleteEvent(this, thing, response));
     }
 
     /**
@@ -130,5 +142,13 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     public Thing getThing() {
         return thing;
+    }
+
+    private void initScriptContext() {
+        scriptContext= new ScriptContext();
+        scriptContext.getContext().put(GPIO_LIB_NAME, commandExecutor);
+        scriptRunner.setContext(scriptContext);
+
+        thing.getPins().forEach(pin -> scriptContext.getContext().put(pin.getName(), pin.getPinNbr()));
     }
 }

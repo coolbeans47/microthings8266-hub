@@ -1,6 +1,8 @@
 package coolbeans.microthings8266hub.service;
 
 import coolbeans.microthings8266hub.esp8266.Esp8266CommandExecutor;
+import coolbeans.microthings8266hub.service.script.RhinoScriptRunner;
+import coolbeans.microthings8266hub.service.script.ScriptContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,10 +23,17 @@ public class RhinoScriptRunnerTest {
 
     RhinoScriptRunner rhinoScriptRunner;
 
+    ScriptContext context;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        rhinoScriptRunner = new RhinoScriptRunner(esp8266CommandExecutor);
+        rhinoScriptRunner = new RhinoScriptRunner();
+        context = new ScriptContext();
+        context.getContext().put("gpio", esp8266CommandExecutor);
+        context.getContext().put("STR1", "STRVAL1");
+        context.getContext().put("NUM1", 123);
+        rhinoScriptRunner.setContext(context);
     }
 
     @Test
@@ -68,5 +77,31 @@ public class RhinoScriptRunnerTest {
         assertEquals(Integer.class, response.getClass());
         assertEquals(READ_RESPONSE, response);
         verify(esp8266CommandExecutor).digitalRead(12);
+    }
+
+    @Test
+    public void scriptUsingStringContextValue() throws IOException {
+        Object response  = rhinoScriptRunner.execute("run(); function run() { return STR1}; ",
+                "simpleScript");
+        assertEquals(String.class, response.getClass());
+        assertEquals("STRVAL1", response);
+    }
+
+    @Test
+    public void scriptUsingIntegerContextValue() throws IOException {
+        Object response  = rhinoScriptRunner.execute("run(); function run() { return NUM1 }; ",
+                "simpleScript");
+        assertEquals(Integer.class, response.getClass());
+        assertEquals(123, response);
+    }
+
+
+    @Test
+    public void scriptUsingCalcResult() throws IOException {
+        Object response  = rhinoScriptRunner.execute("run(); function run() { return NUM1 + 2 }; ",
+                "simpleScript");
+
+        assertEquals(Double.class, response.getClass());
+        assertEquals(125.0, response);
     }
 }

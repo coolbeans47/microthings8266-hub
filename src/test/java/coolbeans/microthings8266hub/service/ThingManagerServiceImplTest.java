@@ -47,54 +47,53 @@ public class ThingManagerServiceImplTest {
         mapService = new ThingMapService(pinService, actionService);
         thingManagerService = new ThingManagerServiceImpl(mapService, context);
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
-
     }
 
     @Test
     public void disonnectAll() {
-        assertTrue(thingManagerService.isConnected(1L));
+        assertTrue(thingManagerService.isConnected("THING1"));
         thingManagerService.disonnectAll();
-        assertFalse(thingManagerService.isConnected(0L));
+        assertFalse(thingManagerService.isConnected("THING1"));
     }
 
     @Test
     public void connectAll() {
         thingManagerService.addConnection(new ThingConnectionRequest("THING2", "192.168.4.2"));
-        thingManagerService.disconnect(2L);
+        thingManagerService.disconnect("THING2");
         thingManagerService.connectAll();
         assertEquals(2, thingManagerService.getConnectedCount());
     }
 
     @Test
     public void connect() throws IOException {
-        thingManagerService.disconnect(1L);
-        assertFalse(thingManagerService.isConnected(1L));
-        thingManagerService.connect(1L);
-        assertTrue(thingManagerService.isConnected(1L));
+        thingManagerService.disconnect("THING1");
+        assertFalse(thingManagerService.isConnected("THING1"));
+        thingManagerService.connect("THING1");
+        assertTrue(thingManagerService.isConnected("THING1"));
     }
 
     @Test(expected = IOException.class)
     public void connectWithInvalidID() throws IOException {
-        thingManagerService.connect(123L);
+        thingManagerService.connect("THING123");
     }
 
 
     @Test
     public void disconnect() {
-        thingManagerService.disconnect(1L);
-        assertFalse(thingManagerService.isConnected(1L));
+        thingManagerService.disconnect("THING1");
+        assertFalse(thingManagerService.isConnected("THING1"));
     }
 
 
     @Test
     public void isConnected() {
-        assertTrue(thingManagerService.isConnected(1L));
+        assertTrue(thingManagerService.isConnected("THING1"));
     }
 
     @Test
     public void addConnection() {
         thingManagerService.addConnection(new ThingConnectionRequest("THING2", "192.168.4.2"));
-        assertTrue(thingManagerService.isConnected(2L));
+        assertTrue(thingManagerService.isConnected("THING2"));
 
         List<Thing> things = mapService.findAll();
         assertEquals(2, things.size());
@@ -104,14 +103,15 @@ public class ThingManagerServiceImplTest {
     public void addConnectionWithExistngNameAndIpAddress() {
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
         //Should not update
-        assertTrue(thingManagerService.isConnected(1L));
+        assertTrue(thingManagerService.isConnected("THING1"));
+        Thing thing = mapService.findById(1L);
     }
 
     @Test
     public void addConnectionWithExistngNameAndDiffrentIp() {
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.2"));
-        //Should not update
-        assertTrue(thingManagerService.isConnected(1L));
+
+        assertTrue(thingManagerService.isConnected("THING1"));
 
         Thing thing = mapService.findById(1L);
         assertNotNull(thing);
@@ -120,7 +120,7 @@ public class ThingManagerServiceImplTest {
 
     @Test(expected = IOException.class)
     public void connectWhenAlreadyRunning() throws IOException {
-        thingManagerService.connect(1L);
+        thingManagerService.connect("THING1");
     }
 
 }

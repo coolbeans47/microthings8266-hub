@@ -51,19 +51,19 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
     @Async
     public void connect(Thing thing) {
         this.thing = thing;
-        logger.info("Connectinhg to thing: " + thing.getName() + " Thread ID:" +
+        logger.info("Connecting to thing: " + thing.getDeviceId() + "(" + thing.getName() +
+               ") Thread ID:" +
                 Thread.currentThread().getId());
         socket = socketFactory.createSocket(thing.getIpAddress());
         commandExecutor.setSocket(socket);
-        initScriptContext();
         if (socket.isConnected()) {
 
             //send echo
             try {
-                String response = commandExecutor.echo(thing.getName());
+                String response = commandExecutor.echo(thing.getDeviceId());
 
-                if (!response.equals(thing.getName())) {
-                    logger.warning("Echo Response did not match. Expected: " + thing.getName() +
+                if (!response.equals(thing.getDeviceId())) {
+                    logger.warning("Echo Response did not match. Expected: " + thing.getDeviceId() +
                             " Received: [" + response + "]");
                 }
                 messageService.publish(new ThingConnectedEvent(this, thing));
@@ -86,7 +86,7 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
         } catch (IOException e) {
             logger.warning("Failed to close socket: " + thing.toString());
         }
-        System.out.println("Closing thing: " + thing.getName() + " Thread ID:" +
+        logger.info("Closing thing: " + thing.getDeviceId() + " Thread ID:" +
                 Thread.currentThread().getId());
     }
 
@@ -99,13 +99,16 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
             return;
         }
 
-        System.out.println("Invoking Action(" + name + ") : " + thing.getName() + " Thread ID:" +
-                Thread.currentThread().getId());
-        logger.info(action.toString());
+        if (scriptContext == null) {
+            initScriptContext();
+        }
 
-        Object response = scriptRunner.execute(action.getScript(), action.getName());
+        logger.info("Invoking Action(" + name + ") : " + thing.getDeviceId()+ " Thread ID:" +
+                Thread.currentThread().getId());
+
+        Object response = scriptRunner.execute("run();" + action.getScript(), action.getName());
         logger.info("Action Response: " + response);
-        messageService.publish(new ThingActionCompleteEvent(this, thing, response));
+        messageService.publish(new ThingActionCompleteEvent(this, thing, response, name));
     }
 
     /**
@@ -140,15 +143,20 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
         }
     }
 
+    @Override
     public Thing getThing() {
-        return thing;
+        return null;
     }
 
     private void initScriptContext() {
         scriptContext= new ScriptContext();
         scriptContext.getContext().put(GPIO_LIB_NAME, commandExecutor);
+        scriptContext.getContext().put("OUTPUT", 1);
+        scriptContext.getContext().put("INPUT", 0);
+        scriptContext.getContext().put("LOW", 0);
+        scriptContext.getContext().put("HIGH", 1);
+        thing.getPins().forEach(pin -> scriptContext.getContext().put(pin.getName(), pin.getPinNbr()));
         scriptRunner.setContext(scriptContext);
 
-        thing.getPins().forEach(pin -> scriptContext.getContext().put(pin.getName(), pin.getPinNbr()));
     }
 }

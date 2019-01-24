@@ -54,6 +54,7 @@ public class ThingClientConnectionImplTest {
         thing.setId(1L);
         thing.setIpAddress("192.168.2.1");
         thing.setName("TEST-NAME");
+        thing.setDeviceId("TEST-NAME");
 
         Action action = new Action();
         action.setId(1L);
@@ -65,7 +66,7 @@ public class ThingClientConnectionImplTest {
          The connect method will connect to socket and then perform an echo command using the
          thing name. This is mocked.
          */
-        when(esp8266CommandExecutor.echo(anyString())).thenReturn(thing.getName());
+        when(esp8266CommandExecutor.echo(anyString())).thenReturn(thing.getDeviceId());
     }
 
     @Test

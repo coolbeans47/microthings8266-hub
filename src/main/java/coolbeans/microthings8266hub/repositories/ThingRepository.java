@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface ThingRepository extends CrudRepository<Thing, Long> {
-    Optional<Thing> findByName(String name);
+    //Optional<Thing> findByName(String name);
+    Optional<Thing> findByDeviceId(String name);
 }

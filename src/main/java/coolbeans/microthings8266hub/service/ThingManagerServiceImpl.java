@@ -27,7 +27,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     private final ThingService thingService;
     private final ApplicationContext applicationContext;
 
-    private ConcurrentMap<Long, ThingClientConnection> connected = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, ThingClientConnection> connected = new ConcurrentHashMap<>();
 
     public ThingManagerServiceImpl(ThingService thingService,
                                    ApplicationContext applicationContext) {
@@ -37,9 +37,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
 
     @Override
     public void disonnectAll() {
-        connected.values().forEach(connection -> {
-            connection.close();
-        });
+        connected.values().forEach(ThingClientConnection::close);
         connected.clear();
     }
 
@@ -47,36 +45,36 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     public void connectAll() {
         List<Thing> things = thingService.findAll();
         things.forEach(thing -> {
-            if (!isConnected(thing.getId())) {
+            if (!isConnected(thing.getName())) {
                 connectThing(thing);
             }
         });
     }
 
     @Override
-    public void connect(long id) throws IOException {
-        if (isConnected(id)) {
-            throw new IOException("Connect Failed: Thing #" + id + " already connected");
+    public void connect(String deviceId) throws IOException {
+        if (isConnected(deviceId)) {
+            throw new IOException("Connect Failed: Thing #" + deviceId + " already connected");
         }
-        Thing thing = thingService.findById(id);
+        Thing thing = thingService.findByDeviceId(deviceId);
         if (thing == null) {
-            throw new IOException("No database entry for thing#" + id);
+            throw new IOException("No database entry for thing#" + deviceId);
         }
 
         connectThing(thing);
     }
 
     @Override
-    public void disconnect(long id) {
-        if (isConnected(id)) {
-            connected.get(id).close();
-            connected.remove(id);
+    public void disconnect(String deviceId) {
+        if (isConnected(deviceId)) {
+            connected.get(deviceId).close();
+            connected.remove(deviceId);
         }
     }
 
     @Override
-    public boolean isConnected(long id) {
-        return connected.containsKey(id);
+    public boolean isConnected(String deviceId) {
+        return connected.containsKey(deviceId);
     }
 
     @Override
@@ -87,20 +85,34 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     @Override
     public void addConnection(ThingConnectionRequest connectionRequest) {
         //If it already exists check UP adresss in database and updated if required
-        Thing thing = thingService.findByName(connectionRequest.getName());
+        Thing thing = thingService.findByDeviceId(connectionRequest.getDeviceId());
         if (thing == null) {
             thing = new Thing();
-            thing.setName(connectionRequest.getName());
+            thing.setDeviceId(connectionRequest.getDeviceId());
+            thing.setName(connectionRequest.getDeviceId());
             thing.setIpAddress(connectionRequest.getIpAddress());
             thing = thingService.save(thing);
         } else {
-            logger.info("Thing: " + thing.getName() + " already exists");
+            logger.info("Thing: " + thing.getDeviceId() + " already exists");
+
+            //If IP address changed update Thing model and save
             if (!thing.getIpAddress().equals(connectionRequest.getIpAddress())) {
-                logger.info("Thing: " + thing.getName() + "- Updating IP Address from: " +
+                logger.info("Thing: " + thing.getDeviceId() + "- Updating IP Address from: " +
                         thing.getIpAddress() + " to: " + connectionRequest.getIpAddress());
                 thing.setIpAddress(connectionRequest.getIpAddress());
                 thingService.save(thing);
             }
+            ThingClientConnection existing = connected.get(thing.getDeviceId());
+            if (existing != null) {
+                if (existing.isConnected()) {
+                    logger.info("Closing existing device: " + thing.getDeviceId() + " - " + thing.getIpAddress());
+                    connected.remove(thing.getDeviceId());
+                    existing.close();
+                }
+                logger.info("Removing device from connected list: " + thing.getDeviceId() + " - " + thing.getIpAddress());
+                connected.remove(thing.getDeviceId());
+            }
+
         }
         logger.info("Connecting THing: " + thing.toString());
         connectThing(thing);
@@ -108,7 +120,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
 
     @EventListener
     public void newConnectioEvent(ThingConnectionRequestEvent event) {
-        logger.info("EVentListener ThingConnectionRequestEvent: " + event.getThingConnectionRequest().toString() +
+        logger.info("*EventListener ThingConnectionRequestEvent: " + event.getThingConnectionRequest().toString() +
                 " Thread ID: " + Thread.currentThread().getId());
 
         addConnection(event.getThingConnectionRequest());
@@ -116,30 +128,39 @@ public class ThingManagerServiceImpl implements ThingManagerService {
 
     @EventListener
     public void thingConnectdEvent(ThingConnectedEvent event) {
-        logger.info("EVentListener ThingConnectedEvent: " + event.getThing() +
+        logger.info("*EventListener ThingConnectedEvent: " + event.getThing() +
                 " Thread: " + Thread.currentThread().getId());
+        Thing thing = event.getThing();
+        if (thing.getStartupActionName() != null) {
+            ThingClientConnection connection = connected.get(thing.getDeviceId());
+            if (connection != null) {
+                connection.invokeAction(thing.getStartupActionName());
+            }
+        }
     }
 
     @EventListener
     public void thingDisconectedEvent(ThingDisconnectedEvent event) {
-        logger.info("EVentListener ThingDisconnectedEvent: " + event.getThing() +
+        logger.info("*EventListener ThingDisconnectedEvent: " + event.getThing() +
                 " Thread: " + Thread.currentThread().getId());
     }
 
     @EventListener
     public void thingActionCompleteEvent(ThingActionCompleteEvent event) {
-        logger.info("EVentListener ThingActionCompleteEvent: " + event.getThing() +
+        logger.info("*EventListener ThingActionCompleteEvent: " + event.getThing() +
                 " Response: " + event.getResponse() +
+                " Action: " + event.getActionName() +
                 " Thread: " + Thread.currentThread().getId());
+        if (event.getActionName().equals("LEDON")) {
+            logger.info("DEBUG**** INVOKING LED OFF ACTION");
+            ThingClientConnection connection = connected.get(event.getThing().getDeviceId());
+            connection.invokeAction("LEDOFF");
+        }
     }
 
-
-
-    private ThingClientConnection connectThing(Thing thing) {
-        //ThingClientConnection connection = connectionFactory.createConnection(thing);
+    private void  connectThing(Thing thing) {
         ThingClientConnection connection = (ThingClientConnection) applicationContext.getBean("thingClientConnection");
-        connected.put(thing.getId(), connection);
+        connected.put(thing.getDeviceId(), connection);
         connection.connect(thing);
-        return connection;
     }
 }

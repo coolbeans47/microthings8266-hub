@@ -8,7 +8,7 @@ public interface ThingService {
 
     List<Thing> findAll();
     Thing findById(Long id);
-    Thing findByName(String name);
+    Thing findByDeviceId(String name);
     Thing save(Thing thing);
     void deleteById(Long id);
 }

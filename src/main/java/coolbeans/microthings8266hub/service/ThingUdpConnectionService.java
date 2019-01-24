@@ -29,7 +29,7 @@ public class ThingUdpConnectionService implements ThingConnectionService {
         ThingConnectionRequest device = new ThingConnectionRequest();
 
         String name = datagramService.receiveString();
-        device.setName(name);
+        device.setDeviceId(name);
         device.setIpAddress(datagramService.getPacket().getAddress().getHostAddress());
         return device;
     }

@@ -8,9 +8,9 @@ public interface ThingManagerService {
 
     void disonnectAll();
     void connectAll();
-    void connect(long id) throws IOException;
-    void disconnect(long id);
-    boolean isConnected(long id);
+    void connect(String deviceId) throws IOException;
+    void disconnect(String deviceId);
+    boolean isConnected(String deviceId);
     int getConnectedCount();
     void addConnection(ThingConnectionRequest thingConnection);
 }

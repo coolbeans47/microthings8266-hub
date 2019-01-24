@@ -1,22 +1,22 @@
 package coolbeans.microthings8266hub.model;
 
 public class ThingConnectionRequest {
-    private String name;
+    private String deviceId;
     private String ipAddress;
 
     public ThingConnectionRequest() {}
 
-    public ThingConnectionRequest(String name, String ipAddress) {
-        this.name = name;
+    public ThingConnectionRequest(String deviceId, String ipAddress) {
+        this.deviceId = deviceId;
         this.ipAddress = ipAddress;
     }
 
-    public String getName() {
-        return name;
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getIpAddress() {
@@ -31,7 +31,7 @@ public class ThingConnectionRequest {
     @Override
     public String toString() {
         return "ThingConnection{" +
-                "name='" + name + '\'' +
+                "deviceId='" + deviceId + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 '}';
     }

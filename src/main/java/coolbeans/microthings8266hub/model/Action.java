@@ -59,7 +59,7 @@ public class Action {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, thing, name, script);
+        return Objects.hash(id, name, script);
     }
 
     @Override

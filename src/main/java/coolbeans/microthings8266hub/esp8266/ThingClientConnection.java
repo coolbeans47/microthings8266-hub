@@ -8,4 +8,5 @@ public interface ThingClientConnection {
     void close();
     void invokeAction(String name);
     boolean isConnected();
+    Thing getThing();
 }

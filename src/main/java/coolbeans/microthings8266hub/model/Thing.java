@@ -14,8 +14,9 @@ public class Thing {
     private Long id;
 
     private String name;
+    private String deviceId;
     private String ipAddress;
-    private Long startupActionId;
+    private String startupActionName;
 
     @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL)
     private List<Pin> pins = new ArrayList<>();
@@ -32,7 +33,16 @@ public class Thing {
     }
 
     public String getName() {
+        if (name == null) return deviceId;
         return name;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public void setName(String name) {
@@ -47,12 +57,12 @@ public class Thing {
         this.ipAddress = ipAddress;
     }
 
-    public Long getStartupActionId() {
-        return startupActionId;
+    public String getStartupActionName() {
+        return startupActionName;
     }
 
-    public void setStartupActionId(Long startupActionId) {
-        this.startupActionId = startupActionId;
+    public void setStartupActionName(String startupActionName) {
+        this.startupActionName = startupActionName;
     }
 
     public List<Pin> getPins() {
@@ -93,10 +103,9 @@ public class Thing {
         return "Thing{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", deviceId='" + deviceId+ '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
-                ", startupActionId=" + startupActionId +
-                ", pins=" + pins +
-                ", actions=" + actions +
+                ", startupActionName=" + startupActionName +
                 '}';
     }
 
@@ -107,15 +116,16 @@ public class Thing {
         Thing thing = (Thing) o;
         return Objects.equals(id, thing.id) &&
                 Objects.equals(name, thing.name) &&
+                Objects.equals(deviceId, thing.deviceId) &&
                 Objects.equals(ipAddress, thing.ipAddress) &&
-                Objects.equals(startupActionId, thing.startupActionId) &&
+                Objects.equals(startupActionName, thing.startupActionName) &&
                 Objects.equals(pins, thing.pins) &&
                 Objects.equals(actions, thing.actions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, ipAddress, startupActionId, pins, actions);
+        return Objects.hash(id, name, deviceId, ipAddress, startupActionName, pins, actions);
     }
 
 

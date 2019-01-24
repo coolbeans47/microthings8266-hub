@@ -73,7 +73,6 @@ public class Pin {
                 ", pinNbr=" + pinNbr +
                 ", name='" + name + '\'' +
                 ", pinMode=" + pinMode +
-                ", thing=" + thing +
                 '}';
     }
 
@@ -85,12 +84,11 @@ public class Pin {
         return Objects.equals(id, pin.id) &&
                 Objects.equals(pinNbr, pin.pinNbr) &&
                 Objects.equals(name, pin.name) &&
-                pinMode == pin.pinMode &&
-                Objects.equals(thing, pin.thing);
+                pinMode == pin.pinMode;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pinNbr, name, pinMode, thing);
+        return Objects.hash(id, pinNbr, name, pinMode);
     }
 }

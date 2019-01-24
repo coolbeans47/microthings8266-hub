@@ -43,7 +43,7 @@ public class DeviceConnectionServiceImplTest {
 
         ThingConnectionRequest devCon = deviceConnectionService.waitForConnection();
 
-        assertEquals(deviceName, devCon.getName());
+        assertEquals(deviceName, devCon.getDeviceId());
         assertEquals(deviceIp, devCon.getIpAddress());
     }
 }

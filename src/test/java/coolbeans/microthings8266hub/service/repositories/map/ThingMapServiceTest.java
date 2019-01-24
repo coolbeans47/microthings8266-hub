@@ -26,13 +26,13 @@ public class ThingMapServiceTest {
         Thing t1 = new Thing();
         t1.setId(1L);
         t1.setIpAddress("192.168.1.1");
-        t1.setName("THING1");
+        t1.setDeviceId("THING1");
         thingService.save(t1);
 
         Thing t2 = new Thing();
         t2.setId(2L);
         t2.setIpAddress("192.168.1.2");
-        t2.setName("THING2");
+        t2.setDeviceId("THING2");
         thingService.save(t2);
     }
 
@@ -50,14 +50,14 @@ public class ThingMapServiceTest {
 
     @Test
     public void findByName() {
-        Thing found = thingService.findByName("THING2");
+        Thing found = thingService.findByDeviceId("THING2");
         assertNotNull(found);
-        assertEquals("THING2", found.getName());
+        assertEquals("THING2", found.getDeviceId());
     }
 
     @Test
     public void findByInvalidName() {
-        Thing found = thingService.findByName("THINGNOTFOUND");
+        Thing found = thingService.findByDeviceId("THINGNOTFOUND");
         assertNull(found);
     }
 
@@ -66,7 +66,7 @@ public class ThingMapServiceTest {
         Thing thing = new Thing();
         thing.setId(3L);
         thing.setIpAddress("192.168.1.3");
-        thing.setName("THING3");
+        thing.setDeviceId("THING3");
         Thing saved = thingService.save(thing);
         assertEquals(thing, saved);
     }
@@ -81,14 +81,14 @@ public class ThingMapServiceTest {
     public void saveWithoutId() {
         Thing thing = new Thing();
         thing.setIpAddress("192.168.1.3");
-        thing.setName("THING3");
+        thing.setDeviceId("THING3");
 
         Thing saved = thingService.save(thing);
         assertEquals(3L, (long) saved.getId());
 
         Thing found = thingService.findById(3L);
         assertNotNull(found);
-        assertEquals("THING3", found.getName());
+        assertEquals("THING3", found.getDeviceId());
     }
 
 
@@ -98,7 +98,7 @@ public class ThingMapServiceTest {
         thingService = new ThingMapService(pinService, actionService);
         Thing thing = new Thing();
         thing.setIpAddress("192.168.1.3");
-        thing.setName("THING1");
+        thing.setDeviceId("THING1");
 
         Thing saved = thingService.save(thing);
         assertEquals(1L, (long) saved.getId());
@@ -108,7 +108,7 @@ public class ThingMapServiceTest {
     public void savingWithPins() {
        Thing thing = new Thing();
        thing.setIpAddress("192.168.1.5");
-       thing.setName("THING5");
+       thing.setDeviceId("THING5");
        thing.getPins().add(new Pin(1, "Pin-One", PinMode.OUTPUT));
 
        thingService.save(thing);
@@ -120,7 +120,7 @@ public class ThingMapServiceTest {
     public void deleteWithPins() {
         Thing thing = new Thing();
         thing.setIpAddress("192.168.1.5");
-        thing.setName("THING5");
+        thing.setDeviceId("THING5");
         thing.getPins().add(new Pin(1, "Pin-One", PinMode.OUTPUT));
         Thing saved = thingService.save(thing);
         assertEquals(1, pinService.findAll().size());

@@ -22,9 +22,9 @@ public class ThingMapService extends AbstractMapService<Thing>  implements Thing
     }
 
     @Override
-    public Thing findByName(String name) {
+    public Thing findByDeviceId(String deviceID) {
         Optional<Thing> found = map.values().stream()
-                .filter(thing -> thing.getName().equals(name))
+                .filter(thing -> thing.getDeviceId().equals(deviceID))
                 .findFirst();
         return found.orElse(null);
     }

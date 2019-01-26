@@ -7,41 +7,53 @@ import org.mozilla.javascript.ScriptableObject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Logger;
+
 @Service
 @Scope("prototype")
 public class RhinoScriptRunner implements ScriptRunner {
 
-    private ScriptContext globalContext;
-    private Context ctx;
-    private Scriptable globalScope;
+    private Logger logger = Logger.getLogger(RhinoScriptRunner.class.getName());
 
+    private ScriptContext globalContext;
+    private Scriptable globalScope;
 
     public RhinoScriptRunner() {
     }
 
     @Override
     public Object execute(String script, String name) {
-        createContext();
-        Scriptable scope = ctx.initStandardObjects();
-        scope.setParentScope(globalScope);
 
-        Object result = ctx.evaluateString(scope, script, name, 1, null);
-        if (result instanceof NativeJavaObject) {
-            result = ((NativeJavaObject) result).unwrap();
+        Context ctx = Context.enter();
+        try {
+            logger.info("Executing Script: " + name + " - " + script);
+
+            if (globalScope == null) {
+                globalScope = ctx.initStandardObjects();
+                initGlobalScope();
+            }
+
+            Scriptable scope = ctx.newObject(globalScope);
+            scope.setPrototype(globalScope);
+            scope.setParentScope(null);
+
+            Object result = ctx.evaluateString(scope, script, name, 1, null);
+            if (result instanceof NativeJavaObject) {
+                result = ((NativeJavaObject) result).unwrap();
+            }
+            return result; //cx.toString(result);
+
+        } finally {
+            Context.exit();
         }
-        return result; //cx.toString(result);
     }
 
     @Override
     public void setContext(ScriptContext globalContext) {
         this.globalContext = globalContext;
-        reloadGlobalContext();
     }
 
-    public void reloadGlobalContext() {
-        if (globalContext == null || globalContext.getContext().isEmpty()) return;
-        createContext();
-        globalScope = ctx.initStandardObjects();
+    public void initGlobalScope() {
         globalContext.getContext().keySet().forEach(key -> {
             Object val = Context.javaToJS(globalContext.getContext().get(key), globalScope);
             ScriptableObject.putConstProperty(globalScope, key, val);
@@ -53,10 +65,5 @@ public class RhinoScriptRunner implements ScriptRunner {
         return globalContext;
     }
 
-    public void createContext() {
-        if (ctx == null) {
-            ctx = Context.enter();
-        }
-    }
 
 }

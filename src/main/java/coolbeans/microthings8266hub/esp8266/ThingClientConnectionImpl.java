@@ -120,6 +120,7 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
     @Override
     public boolean isConnected() {
         if (socket == null || ! socket.isConnected()) return false;
+        logger.info("Checking if device is still connecting using echo: " + thing.getIpAddress());
 
         int saveTimeout = 0;
         try {
@@ -145,7 +146,7 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     @Override
     public Thing getThing() {
-        return null;
+        return thing;
     }
 
     private void initScriptContext() {

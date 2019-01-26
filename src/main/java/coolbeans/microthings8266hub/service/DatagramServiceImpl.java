@@ -16,7 +16,6 @@ public class DatagramServiceImpl implements DatagramService {
     private DatagramPacket packet;
     private byte[] buffer;
 
-
     public DatagramServiceImpl(SocketFactory socketFactory) {
         this.socketFactory = socketFactory;
         this.socket = socketFactory.createDatagramSocket();

@@ -93,7 +93,7 @@ public class ThingManagerServiceImpl implements ThingManagerService {
             thing.setIpAddress(connectionRequest.getIpAddress());
             thing = thingService.save(thing);
         } else {
-            logger.info("Thing: " + thing.getDeviceId() + " already exists");
+            logger.info("Thing already in database:" + thing.toString());
 
             //If IP address changed update Thing model and save
             if (!thing.getIpAddress().equals(connectionRequest.getIpAddress())) {
@@ -102,19 +102,22 @@ public class ThingManagerServiceImpl implements ThingManagerService {
                 thing.setIpAddress(connectionRequest.getIpAddress());
                 thingService.save(thing);
             }
+
             ThingClientConnection existing = connected.get(thing.getDeviceId());
             if (existing != null) {
-                if (existing.isConnected()) {
-                    logger.info("Closing existing device: " + thing.getDeviceId() + " - " + thing.getIpAddress());
-                    connected.remove(thing.getDeviceId());
-                    existing.close();
+                if (thing.getIpAddress().equals(existing.getThing().getIpAddress())) {
+                    boolean connected = existing.isConnected();
+                    if (connected) {
+                        logger.info("Ignoring request. Already connected: " + thing.getDeviceId() + " - " + thing.getIpAddress());
+                        return;
+                    }
                 }
                 logger.info("Removing device from connected list: " + thing.getDeviceId() + " - " + thing.getIpAddress());
                 connected.remove(thing.getDeviceId());
             }
 
         }
-        logger.info("Connecting THing: " + thing.toString());
+        logger.info("Connecting Thing: " + thing.toString());
         connectThing(thing);
     }
 
@@ -130,10 +133,13 @@ public class ThingManagerServiceImpl implements ThingManagerService {
     public void thingConnectdEvent(ThingConnectedEvent event) {
         logger.info("*EventListener ThingConnectedEvent: " + event.getThing() +
                 " Thread: " + Thread.currentThread().getId());
+
         Thing thing = event.getThing();
         if (thing.getStartupActionName() != null) {
             ThingClientConnection connection = connected.get(thing.getDeviceId());
             if (connection != null) {
+                logger.info("Invoking startup action: " + thing.getStartupActionName() + " - deviceId:" +
+                        event.getThing().getDeviceId());
                 connection.invokeAction(thing.getStartupActionName());
             }
         }
@@ -151,11 +157,18 @@ public class ThingManagerServiceImpl implements ThingManagerService {
                 " Response: " + event.getResponse() +
                 " Action: " + event.getActionName() +
                 " Thread: " + Thread.currentThread().getId());
+
+        /*
         if (event.getActionName().equals("LEDON")) {
             logger.info("DEBUG**** INVOKING LED OFF ACTION");
             ThingClientConnection connection = connected.get(event.getThing().getDeviceId());
             connection.invokeAction("LEDOFF");
+        } else if (event.getActionName().equals("LEDOFF")) {
+            logger.info("DEBUG**** INVOKING LED ON ACTION");
+            ThingClientConnection connection = connected.get(event.getThing().getDeviceId());
+            connection.invokeAction("LEDON");
         }
+        */
     }
 
     private void  connectThing(Thing thing) {

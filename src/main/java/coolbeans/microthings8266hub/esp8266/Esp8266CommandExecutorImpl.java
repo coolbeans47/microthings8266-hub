@@ -1,5 +1,6 @@
 package coolbeans.microthings8266hub.esp8266;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -8,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 @Component
+@Scope("prototype")
 public class Esp8266CommandExecutorImpl implements Esp8266CommandExecutor{
 
     private Socket socket;
@@ -46,6 +48,7 @@ public class Esp8266CommandExecutorImpl implements Esp8266CommandExecutor{
         header[1] = (byte) pinId;
         header[2] = (byte) pinMode;
         writeHeader(header);
+        socket.getOutputStream().flush();
     }
 
     @Override
@@ -55,6 +58,7 @@ public class Esp8266CommandExecutorImpl implements Esp8266CommandExecutor{
         header[1] = (byte) pinId;
         header[2] = (byte) 0;
         writeHeader(header);
+        socket.getOutputStream().flush();
         int response = socket.getInputStream().read();
         return response;
     }
@@ -66,6 +70,7 @@ public class Esp8266CommandExecutorImpl implements Esp8266CommandExecutor{
         header[1] = (byte) pinId;
         header[2] = (byte) value;
         writeHeader(header);
+        socket.getOutputStream().flush();
     }
 
 

@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ThingManagerServiceImplTest {
 
@@ -100,22 +100,39 @@ public class ThingManagerServiceImplTest {
     }
 
     @Test
-    public void addConnectionWithExistngNameAndIpAddress() {
+    public void addConnectionWithExistngNameAndIpAddressAndConnected() {
+        when(clientConnection.getThing()).thenReturn(mapService.findByDeviceId("THING1"));
+        when(clientConnection.isConnected()).thenReturn(true);
         thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
         //Should not update
         assertTrue(thingManagerService.isConnected("THING1"));
-        Thing thing = mapService.findById(1L);
+        verify(clientConnection).connect(any(Thing.class));
+    }
+
+    @Test
+    public void addConnectionWithExistngNameAndIpAddressAndNotConnected() {
+        when(clientConnection.getThing()).thenReturn(mapService.findByDeviceId("THING1"));
+        when(clientConnection.isConnected()).thenReturn(false);
+        thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.1"));
+        //Should not update
+        assertTrue(thingManagerService.isConnected("THING1"));
+        //If the device had disconnected then discconnect will be called 2 times, the second time the reconnection
+        verify(clientConnection, times(2)).connect(any(Thing.class));
     }
 
     @Test
     public void addConnectionWithExistngNameAndDiffrentIp() {
-        thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.2"));
-
+        Thing existing = new Thing();
+        existing.setIpAddress("192.168.4.1");
+        existing.setId(1L);
+        existing.setName("THING1");
+        when(clientConnection.getThing()).thenReturn(existing);
+        thingManagerService.addConnection(new ThingConnectionRequest("THING1", "192.168.4.3"));
         assertTrue(thingManagerService.isConnected("THING1"));
 
         Thing thing = mapService.findById(1L);
         assertNotNull(thing);
-        assertEquals("192.168.4.2", thing.getIpAddress());
+        assertEquals("192.168.4.3", thing.getIpAddress());
     }
 
     @Test(expected = IOException.class)

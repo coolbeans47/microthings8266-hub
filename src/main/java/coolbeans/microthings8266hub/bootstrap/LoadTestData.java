@@ -22,10 +22,11 @@ public class LoadTestData implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+
         Thing thing = new Thing();
         thing.setDeviceId("80:7D:3A:29:86:B5");
         thing.setName(thing.getDeviceId());
-        thing.setIpAddress("192.168.0.39");
+        thing.setIpAddress("192.168.0.0");
         thing.setStartupActionName("LEDON");
         thing.addPin(createPin("LEDPIN", 14));
         thing.addAction(createAction("LEDON",
@@ -37,7 +38,6 @@ public class LoadTestData implements CommandLineRunner {
                         "gpio.pinMode(LEDPIN, OUTPUT); gpio.digitalWrite(LEDPIN, LOW)" +
                         "}"));
         thingService.save(thing);
-
     }
 
     private Action createAction(String name, String script) {

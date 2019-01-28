@@ -1,10 +1,9 @@
 package coolbeans.microthings8266hub.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 public class Thing {
@@ -18,11 +17,13 @@ public class Thing {
     private String ipAddress;
     private String startupActionName;
 
-    @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pin> pins = new ArrayList<>();
 
-    @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL)
-    private List<Action> actions = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Map<String, Action> actions = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -73,11 +74,11 @@ public class Thing {
         this.pins = pins;
     }
 
-    public List<Action> getActions() {
+    public Map<String, Action> getActions() {
         return actions;
     }
 
-    public void setActions(List<Action> actions) {
+    public void setActions(Map<String, Action> actions) {
         this.actions = actions;
     }
 
@@ -88,15 +89,17 @@ public class Thing {
 
     public void addAction(Action action) {
         action.setThing(this);
-        actions.add(action);
+        actions.put(action.getName(), action);
     }
 
-    public Action findActionByName(String name) {
-        Optional<Action> action = actions.stream()
-                .filter(a -> a.getName().equals(name))
-                .findFirst();
-        return action.orElse(null);
+    public int getPinCount() {
+        return pins.size();
     }
+
+    public int getActionCount() {
+        return actions.size();
+    }
+
 
     @Override
     public String toString() {
@@ -105,7 +108,7 @@ public class Thing {
                 ", name='" + name + '\'' +
                 ", deviceId='" + deviceId+ '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
-                ", startupActionName=" + startupActionName +
+                ", startupActionId=" + startupActionName +
                 '}';
     }
 

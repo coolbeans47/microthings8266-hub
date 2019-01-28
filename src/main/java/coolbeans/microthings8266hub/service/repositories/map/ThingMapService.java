@@ -38,7 +38,7 @@ public class ThingMapService extends AbstractMapService<Thing>  implements Thing
             pin.setThing(thing);
             pinService.save(pin);
         });
-        thing.getActions().forEach(action -> {
+        thing.getActions().values().forEach(action -> {
             action.setThing(thing);
             actionService.save(action);
         });
@@ -54,7 +54,7 @@ public class ThingMapService extends AbstractMapService<Thing>  implements Thing
                 thing.getPins().forEach(pin -> pinService.deleteById(pin.getId()));
             }
             if (thing.getActions() != null) {
-                thing.getActions().forEach(action -> actionService.deleteById(action.getId()));
+                thing.getActions().values().forEach(action -> actionService.deleteById(action.getId()));
             }
         }
 

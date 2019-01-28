@@ -1,5 +1,6 @@
 package coolbeans.microthings8266hub.model;
 
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -9,8 +10,11 @@ public class Action {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne()
     private Thing thing;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Trigger actionCompleteTrigger;
 
     private String name;
     private String script;
@@ -23,6 +27,7 @@ public class Action {
         this.id = id;
     }
 
+
     public Thing getThing() {
         return thing;
     }
@@ -30,6 +35,7 @@ public class Action {
     public void setThing(Thing thing) {
         this.thing = thing;
     }
+
 
     public String getName() {
         return name;
@@ -45,6 +51,15 @@ public class Action {
 
     public void setScript(String script) {
         this.script = script;
+    }
+
+    public Trigger getActionCompleteTrigger() {
+        return actionCompleteTrigger;
+    }
+
+    public void setActionCompleteTrigger(Trigger actionCompleteTrigger) {
+        actionCompleteTrigger.setAction(this);
+        this.actionCompleteTrigger = actionCompleteTrigger;
     }
 
     @Override

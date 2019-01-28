@@ -3,9 +3,7 @@ package coolbeans.microthings8266hub.service.repositories.map;
 import coolbeans.microthings8266hub.model.Pin;
 import coolbeans.microthings8266hub.model.PinMode;
 import coolbeans.microthings8266hub.model.Thing;
-import coolbeans.microthings8266hub.service.repositories.ActionService;
-import coolbeans.microthings8266hub.service.repositories.PinService;
-import coolbeans.microthings8266hub.service.repositories.ThingService;
+import coolbeans.microthings8266hub.service.repositories.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,12 +14,16 @@ public class ThingMapServiceTest {
     ThingService thingService;
     PinService pinService;
     ActionService actionService;
+    TriggerService triggerService;
+    TriggerActionService triggerActionService;
 
     @Before
     public void setUp() throws Exception {
         pinService = new PinMapService();
+        triggerActionService = new TriggerActionMapService();
+        triggerService = new TriggerMapService(triggerActionService);
         thingService = new ThingMapService(pinService, actionService);
-        actionService = new ActionMapService();
+        actionService = new ActionMapService(triggerService);
 
         Thing t1 = new Thing();
         t1.setId(1L);

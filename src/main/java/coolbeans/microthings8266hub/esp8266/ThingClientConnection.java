@@ -6,7 +6,7 @@ public interface ThingClientConnection {
 
     void connect(Thing thing);
     void close();
-    void invokeAction(String name);
+    void invokeAction(String actionName);
     boolean isConnected();
     Thing getThing();
 }

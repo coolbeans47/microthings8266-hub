@@ -92,10 +92,10 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
 
     @Override
     @Async
-    public void invokeAction(String name) {
-        Action action = thing.findActionByName(name);
+    public void invokeAction(String actionName) {
+        Action action = thing.getActions().get(actionName);
         if (action == null) {
-            logger.warning("Action not found: " + name);
+            logger.warning("Action not found ID=: " + actionName);
             return;
         }
 
@@ -103,12 +103,12 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
             initScriptContext();
         }
 
-        logger.info("Invoking Action(" + name + ") : " + thing.getDeviceId()+ " Thread ID:" +
+        logger.info("Invoking Action(" + action.getName() + ") : " + thing.getDeviceId()+ " Thread ID:" +
                 Thread.currentThread().getId());
 
         Object response = scriptRunner.execute("run();" + action.getScript(), action.getName());
         logger.info("Action Response: " + response);
-        messageService.publish(new ThingActionCompleteEvent(this, thing, response, name));
+        messageService.publish(new ThingActionCompleteEvent(this, thing, response, actionName));
     }
 
     /**

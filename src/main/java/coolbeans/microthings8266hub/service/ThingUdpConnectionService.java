@@ -6,8 +6,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 @Service
@@ -19,7 +19,7 @@ public class ThingUdpConnectionService implements ThingConnectionService {
 
     private final DatagramService datagramService;
     private final ApplicationMessageService messageService;
-    private Map<String, Long> connectRequestTime = new HashMap<>();
+    private ConcurrentMap<String, Long> connectRequestTime = new ConcurrentHashMap<>();
 
     private boolean running;
 
@@ -70,7 +70,6 @@ public class ThingUdpConnectionService implements ThingConnectionService {
             connectRequestTime.put(ipAddress, time);
             return true;
         }
-
 
         long delta = System.currentTimeMillis() - connectRequestTime.get(ipAddress);
         connectRequestTime.remove(ipAddress);

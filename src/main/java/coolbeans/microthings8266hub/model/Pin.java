@@ -1,5 +1,6 @@
 package coolbeans.microthings8266hub.model;
 
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -58,6 +59,7 @@ public class Pin {
         this.pinMode = pinMode;
     }
 
+
     public Thing getThing() {
         return thing;
     }
@@ -65,6 +67,7 @@ public class Pin {
     public void setThing(Thing thing) {
         this.thing = thing;
     }
+
 
     @Override
     public String toString() {

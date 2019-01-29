@@ -1,6 +1,7 @@
 package coolbeans.microthings8266hub.bootstrap;
 
 import coolbeans.microthings8266hub.model.*;
+import coolbeans.microthings8266hub.service.repositories.ActionService;
 import coolbeans.microthings8266hub.service.repositories.ThingService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Component;
 public class LoadTestData implements CommandLineRunner {
 
     private final ThingService thingService;
+    private final ActionService actionService;
 
-    public LoadTestData(ThingService thingService) {
+    public LoadTestData(ThingService thingService, ActionService actionService) {
         this.thingService = thingService;
+        this.actionService = actionService;
     }
 
 
@@ -35,19 +38,26 @@ public class LoadTestData implements CommandLineRunner {
                         "gpio.pinMode(LEDPIN, OUTPUT); gpio.digitalWrite(LEDPIN, LOW)" +
                         "}"));
 
+        thing.addAction(createAction("LEDBLINK",
+                "function run() {" +
+                        "gpio.pinMode(LEDPIN, OUTPUT); gpio.digitalWrite(LEDPIN, LOW); gpio.digitalWrite(LEDPIN, HIGH)" +
+                        "}"));
+
+        thingService.save(thing);
+
         Trigger trigger = new Trigger();
-        Action action = thing.getActions().get("LEDON");
+        Action action = thing.getActions().get(0);
         action.setActionCompleteTrigger(trigger);
         trigger.setRepeatCount(3);
 
 
         TriggerAction triggerAction1 = new TriggerAction();
         trigger.addTriggerAction(triggerAction1);
-        triggerAction1.setAction(thing.getActions().get("LEDOFF"));
+        triggerAction1.setAction(actionService.findByName("LEDON"));
 
         TriggerAction triggerAction2 = new TriggerAction();
         trigger.addTriggerAction(triggerAction2);
-        triggerAction2.setAction(thing.getActions().get("LEDON"));
+        triggerAction2.setAction(actionService.findByName("LEDBLINK"));
 
         thingService.save(thing);
     }

@@ -93,7 +93,12 @@ public class ThingClientConnectionImpl implements ThingClientConnection{
     @Override
     @Async
     public void invokeAction(String actionName) {
-        Action action = thing.getActions().get(actionName);
+
+        Action action = thing.getActions()
+                .stream()
+                .filter(a -> a.getName().equals(actionName))
+                .findFirst()
+                .orElse(null);
         if (action == null) {
             logger.warning("Action not found ID=: " + actionName);
             return;

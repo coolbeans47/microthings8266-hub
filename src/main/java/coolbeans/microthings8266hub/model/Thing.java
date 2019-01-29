@@ -1,9 +1,10 @@
 package coolbeans.microthings8266hub.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Thing {
@@ -17,13 +18,20 @@ public class Thing {
     private String ipAddress;
     private String startupActionName;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pin> pins = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(mappedBy = "thing", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Map<String, Action> actions = new HashMap<>();
+    private List<Action> actions = new ArrayList<>();
+
+    public Thing() {}
+
+    public Thing(String name, String deviceId, String ipAddress, String startupActionName) {
+        this.name = name;
+        this.deviceId = deviceId;
+        this.ipAddress = ipAddress;
+        this.startupActionName = startupActionName;
+    }
 
     public Long getId() {
         return id;
@@ -74,11 +82,11 @@ public class Thing {
         this.pins = pins;
     }
 
-    public Map<String, Action> getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 
-    public void setActions(Map<String, Action> actions) {
+    public void setActions(List<Action> actions) {
         this.actions = actions;
     }
 
@@ -89,15 +97,7 @@ public class Thing {
 
     public void addAction(Action action) {
         action.setThing(this);
-        actions.put(action.getName(), action);
-    }
-
-    public int getPinCount() {
-        return pins.size();
-    }
-
-    public int getActionCount() {
-        return actions.size();
+        actions.add(action);
     }
 
 

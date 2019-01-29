@@ -10,4 +10,5 @@ public interface ActionService {
         Action findById(Long id);
         Action save(Action action);
         void deleteById(Long id);
+        Action findByName(String name);
 }

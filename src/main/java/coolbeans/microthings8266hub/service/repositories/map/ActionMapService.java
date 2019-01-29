@@ -35,6 +35,14 @@ public class ActionMapService extends AbstractMapService<Action> implements Acti
         }
     }
 
+    @Override
+    public Action findByName(String name) {
+        return this.map.values().stream()
+                .filter(a -> a.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
     private void saveTriggers(Action action) {
         if (action.getActionCompleteTrigger() != null) {
             triggerService.save(action.getActionCompleteTrigger());

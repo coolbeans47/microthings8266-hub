@@ -17,7 +17,11 @@ public class Action {
     private Trigger actionCompleteTrigger;
 
     private String name;
+
+    @Lob
     private String script;
+
+    public Action() {}
 
     public Long getId() {
         return id;

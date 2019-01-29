@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 public class ThingMapServiceTest {
 
     ThingService thingService;
+
     PinService pinService;
     ActionService actionService;
     TriggerService triggerService;

@@ -40,4 +40,11 @@ public class ActionJpaService implements ActionService {
     public void deleteById(Long id) {
         actionRepository.deleteById(id);
     }
+
+    @Override
+    public Action findByName(String name) {
+        return actionRepository.findByName(name).orElse(null);
+    }
+
+
 }

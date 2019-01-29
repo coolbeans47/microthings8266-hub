@@ -2,6 +2,8 @@ package coolbeans.microthings8266hub.model;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -11,8 +13,14 @@ public class Pin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 0, max = 30)
     private Integer pinNbr;
+
+    @NotNull
+    @Size(min = 3, max = 100)
     private String name;
+
+    @NotNull
     private PinMode pinMode;
 
     @ManyToOne
